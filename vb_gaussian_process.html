@@ -1,0 +1,2046 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Benchmarks for gaussian_process &mdash; Vbench performance benchmarks for scikit-learn</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.12-git',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="Vbench performance benchmarks for scikit-learn" href="index.html" />
+    <link rel="next" title="Benchmarks for linear_model" href="vb_linear_model.html" />
+    <link rel="prev" title="Benchmarks for decomposition" href="vb_decomposition.html" />
+
+  <!-- Reference the theme's stylesheet on the Google CDN -->
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/excite-bike/jquery-ui.css"
+        type="text/css" rel="Stylesheet" />
+ 
+  <!-- Reference jQuery and jQuery UI from the CDN. Remember
+       that the order of these two elements is important -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+      $(function(){
+        $(".profiler-output").accordion({collapsible: true, header: "p", active: false} );
+      });
+    </script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-22606712-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head>
+  <body>
+
+    <div class="header-wrapper">
+      <div class="header">
+          <p class="logo"><a href="http://scikit-learn.org/">
+            <img src="_static/scikit-learn-logo-small.png" alt="Logo"/>
+          </a>
+          </p><div class="navbar">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="quick_start.html">Speed Quick Start</a></li>
+            <li><a href="http://scikit-learn.org/dev/user_guide.html">User's Guide</a></li>
+            <li><a href="http://scikit-learn.org/dev/developers/performance.html">Performance</a></li>
+            <li><a href="http://github.com/scikit-learn/scikit-learn">Github</a></li>
+            <li><a href="http://github.com/vene/scikit-learn-speed">Speed Github</a></li>
+       </ul>
+</div>
+<!-- end navbar --></div>
+    </div>
+
+    <div class="content-wrapper">
+
+      <div class="sphinxsidebar">
+	<div class="sphinxsidebarwrapper">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="vb_cluster.html">Benchmarks for cluster</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_covariance.html">Benchmarks for covariance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_decomposition.html">Benchmarks for decomposition</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Benchmarks for gaussian_process</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-cobyla-minimadelon-oney-fit">GaussianProcess-cobyla-minimadelon-oney-fit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-cobyla-minimadelon-oney-predict">GaussianProcess-cobyla-minimadelon-oney-predict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-cobyla-blobs-fit">GaussianProcess-cobyla-blobs-fit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-cobyla-blobs-predict">GaussianProcess-cobyla-blobs-predict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-welch-minimadelon-oney-fit">GaussianProcess-Welch-minimadelon-oney-fit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-welch-minimadelon-oney-predict">GaussianProcess-Welch-minimadelon-oney-predict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-welch-blobs-fit">GaussianProcess-Welch-blobs-fit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gaussianprocess-welch-blobs-predict">GaussianProcess-Welch-blobs-predict</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vb_linear_model.html">Benchmarks for linear_model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_mixture.html">Benchmarks for mixture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_naive_bayes.html">Benchmarks for naive_bayes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_neighbors.html">Benchmarks for neighbors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_pls.html">Benchmarks for pls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_semi_supervised.html">Benchmarks for semi_supervised</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_svm.html">Benchmarks for svm</a></li>
+</ul>
+
+          <!--
+	   <div class="rel rellarge">
+	     
+	<!-- rellinks[1:] is an ugly hack to avoid link to module
+	    index  --
+	<div class="rellink">
+	<a href="vb_decomposition.html" title="Benchmarks for decomposition"
+	    accesskey="P">Previous
+	    <br>
+	    <span class="smallrellink">
+	    Benchmarks for d...
+	    </span>
+	    <span class="hiddenrellink">
+	    Benchmarks for decomposition
+	    </span>
+	    
+	    </a>
+	</div>
+	    <div class="spacer">
+	    &nbsp;
+	    </div>
+	
+	<div class="rellink">
+	<a href="vb_linear_model.html" title="Benchmarks for linear_model"
+	    accesskey="N">Next
+	    <br>
+	    <span class="smallrellink">
+	    Benchmarks for l...
+	    </span>
+	    <span class="hiddenrellink">
+	    Benchmarks for linear_model
+	    </span>
+	    
+	    </a>
+	</div>
+	<!-- Ad a link to the 'up' page --
+    </div>
+    <p style="text-align: center; background-color: #FFE4E4">This documentation is
+    for scikit-learn <strong>version 0.12-git</strong>
+    &mdash; <a href="http://scikit-learn.org/stable/support.html#documentation-resources">Other versions</a></p>
+    
+    <h3>Citing</h3>
+    <p>If you use the software, please consider
+    <a href="about.html#citing-scikit-learn">citing scikit-learn</a>.</p>
+    <h3>This page</h3>
+	<ul>
+<li><a class="reference internal" href="#">Benchmarks for gaussian_process</a><ul>
+<li><a class="reference internal" href="#gaussianprocess-cobyla-minimadelon-oney-fit">GaussianProcess-cobyla-minimadelon-oney-fit</a></li>
+<li><a class="reference internal" href="#gaussianprocess-cobyla-minimadelon-oney-predict">GaussianProcess-cobyla-minimadelon-oney-predict</a></li>
+<li><a class="reference internal" href="#gaussianprocess-cobyla-blobs-fit">GaussianProcess-cobyla-blobs-fit</a></li>
+<li><a class="reference internal" href="#gaussianprocess-cobyla-blobs-predict">GaussianProcess-cobyla-blobs-predict</a></li>
+<li><a class="reference internal" href="#gaussianprocess-welch-minimadelon-oney-fit">GaussianProcess-Welch-minimadelon-oney-fit</a></li>
+<li><a class="reference internal" href="#gaussianprocess-welch-minimadelon-oney-predict">GaussianProcess-Welch-minimadelon-oney-predict</a></li>
+<li><a class="reference internal" href="#gaussianprocess-welch-blobs-fit">GaussianProcess-Welch-blobs-fit</a></li>
+<li><a class="reference internal" href="#gaussianprocess-welch-blobs-predict">GaussianProcess-Welch-blobs-predict</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  -->
+    </div>
+	  </div>
+
+
+      <div class="content">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="benchmarks-for-gaussian-process">
+<h1>Benchmarks for gaussian_process<a class="headerlink" href="#benchmarks-for-gaussian-process" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="gaussianprocess-cobyla-minimadelon-oney-fit">
+<h2>GaussianProcess-cobyla-minimadelon-oney-fit<a class="headerlink" href="#gaussianprocess-cobyla-minimadelon-oney-fit" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;fmin_cobyla&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon-oney&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-cobyla-minimadelon-oney-fit-timing.png" src="_images/GaussianProcess-cobyla-minimadelon-oney-fit-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-cobyla-minimadelon-oney-fit-memory.png" src="_images/GaussianProcess-cobyla-minimadelon-oney-fit-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         355 function calls in 0.016 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.016    0.016 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.016    0.016 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.001    0.001    0.016    0.016 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:250(fit)
+     1    0.006    0.006    0.008    0.008 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:28(l1_cross_distances)
+     1    0.000    0.000    0.005    0.005 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:522(reduced_likelihood_function)
+     1    0.002    0.002    0.003    0.003 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     3    0.002    0.001    0.002    0.001 {numpy.core.multiarray.zeros}
+     2    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     4    0.001    0.000    0.001    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/basic.py:72(solve_triangular)
+    11    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/function_base.py:526(asarray_chkfinite)
+     2    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2377(std)
+     2    0.001    0.000    0.001    0.000 {method 'std' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.001    0.000 {map}
+     8    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:60(get_lapack_funcs)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_qr.py:16(qr)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:30(cholesky)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:13(_cholesky)
+    24    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:45(find_best_lapack_type)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+     2    0.000    0.000    0.000    0.000 {method 'mean' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_svd.py:14(svd)
+    22    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:98(triu)
+    31    0.000    0.000    0.000    0.000 {numpy.core.multiarray.arange}
+     3    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+    13    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:23(cast_to_lapack_prefix)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:20(tri)
+    25    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1836(amin)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+     1    0.000    0.000    0.000    0.000 {method 'min' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:169(eye)
+    16    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+    26    0.000    0.000    0.000    0.000 {issubclass}
+     1    0.000    0.000    0.000    0.000 {method 'outer' of 'numpy.ufunc' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:220(diag)
+    10    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:449(isfortran)
+    27    0.000    0.000    0.000    0.000 {len}
+     2    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.generic' objects}
+     8    0.000    0.000    0.000    0.000 {getattr}
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+    24    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     9    0.000    0.000    0.000    0.000 {method 'sort' of 'list' objects}
+     2    0.000    0.000    0.000    0.000 {isinstance}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     2    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {method 'prod' of 'numpy.ndarray' objects}
+     7    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/misc.py:22(_datacopied)
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     4    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: fit at line 250
+Total time: 0.016096 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   250                                               def fit(self, X, y):
+   251                                                   """
+   252                                                   The Gaussian Process model fitting method.
+   253
+   254                                                   Parameters
+   255                                                   ----------
+   256                                                   X : double array_like
+   257                                                       An array with shape (n_samples, n_features) with the input at which
+   258                                                       observations were made.
+   259
+   260                                                   y : double array_like
+   261                                                       An array with shape (n_features, ) with the observations of the
+   262                                                       scalar output to be predicted.
+   263
+   264                                                   Returns
+   265                                                   -------
+   266                                                   gp : self
+   267                                                       A fitted Gaussian Process model object awaiting data to perform
+   268                                                       predictions.
+   269                                                   """
+   270         1           17     17.0      0.1          self.random_state = check_random_state(self.random_state)
+   271
+   272                                                   # Force data to 2D numpy.array
+   273         1           45     45.0      0.3          X = array2d(np.asarray(X))
+   274         1           26     26.0      0.2          y = np.asarray(y).ravel()[:, np.newaxis]
+   275
+   276                                                   # Check shapes of DOE &amp; observations
+   277         1            8      8.0      0.0          n_samples_X, n_features = X.shape
+   278         1            7      7.0      0.0          n_samples_y = y.shape[0]
+   279
+   280         1            6      6.0      0.0          if n_samples_X != n_samples_y:
+   281                                                       raise ValueError("X and y must have the same number of rows.")
+   282                                                   else:
+   283         1            6      6.0      0.0              n_samples = n_samples_X
+   284
+   285                                                   # Run input checks
+   286         1          171    171.0      1.1          self._check_params(n_samples)
+   287
+   288                                                   # Normalize data or don't
+   289         1            7      7.0      0.0          if self.normalize:
+   290         1          143    143.0      0.9              X_mean = np.mean(X, axis=0)
+   291         1          386    386.0      2.4              X_std = np.std(X, axis=0)
+   292         1           37     37.0      0.2              y_mean = np.mean(y, axis=0)
+   293         1           76     76.0      0.5              y_std = np.std(y, axis=0)
+   294         1           34     34.0      0.2              X_std[X_std == 0.] = 1.
+   295         1           22     22.0      0.1              y_std[y_std == 0.] = 1.
+   296                                                       # center and scale X if necessary
+   297         1          372    372.0      2.3              X = (X - X_mean) / X_std
+   298         1           34     34.0      0.2              y = (y - y_mean) / y_std
+   299                                                   else:
+   300                                                       X_mean = np.zeros(1)
+   301                                                       X_std = np.ones(1)
+   302                                                       y_mean = np.zeros(1)
+   303                                                       y_std = np.ones(1)
+   304
+   305                                                   # Calculate matrix of distances D between samples
+   306         1         8101   8101.0     50.3          D, ij = l1_cross_distances(X)
+   307         1          847    847.0      5.3          if np.min(np.sum(D, axis=1)) == 0. \
+   308                                                                               and self.corr != correlation.pure_nugget:
+   309                                                       raise Exception("Multiple input features cannot have the same"
+   310                                                               " value")
+   311
+   312                                                   # Regression matrix and parameters
+   313         1           52     52.0      0.3          F = self.regr(X)
+   314         1            8      8.0      0.0          n_samples_F = F.shape[0]
+   315         1            8      8.0      0.0          if F.ndim &gt; 1:
+   316         1            8      8.0      0.0              p = F.shape[1]
+   317                                                   else:
+   318                                                       p = 1
+   319         1            7      7.0      0.0          if n_samples_F != n_samples:
+   320                                                       raise Exception("Number of rows in F and X do not match. Most "
+   321                                                                     + "likely something is going wrong with the "
+   322                                                                     + "regression model.")
+   323         1            6      6.0      0.0          if p &gt; n_samples_F:
+   324                                                       raise Exception(("Ordinary least squares problem is undetermined "
+   325                                                                      + "n_samples=%d must be greater than the "
+   326                                                                      + "regression model size p=%d.") % (n_samples, p))
+   327         1            7      7.0      0.0          if self.beta0 is not None:
+   328                                                       if self.beta0.shape[0] != p:
+   329                                                           raise Exception("Shapes of beta0 and F do not match.")
+   330
+   331                                                   # Set attributes
+   332         1            9      9.0      0.1          self.X = X
+   333         1            6      6.0      0.0          self.y = y
+   334         1            6      6.0      0.0          self.D = D
+   335         1            6      6.0      0.0          self.ij = ij
+   336         1            6      6.0      0.0          self.F = F
+   337         1            8      8.0      0.0          self.X_mean, self.X_std = X_mean, X_std
+   338         1            8      8.0      0.0          self.y_mean, self.y_std = y_mean, y_std
+   339
+   340                                                   # Determine Gaussian Process model parameters
+   341         1           14     14.0      0.1          if self.thetaL is not None and self.thetaU is not None:
+   342                                                       # Maximum Likelihood Estimation of the parameters
+   343                                                       if self.verbose:
+   344                                                           print("Performing Maximum Likelihood Estimation of the "
+   345                                                               + "autocorrelation parameters...")
+   346                                                       self.theta_, self.reduced_likelihood_function_value_, par = \
+   347                                                           self._arg_max_reduced_likelihood_function()
+   348                                                       if np.isinf(self.reduced_likelihood_function_value_):
+   349                                                           raise Exception("Bad parameter region. "
+   350                                                                         + "Try increasing upper bound")
+   351
+   352                                                   else:
+   353                                                       # Given parameters
+   354         1            7      7.0      0.0              if self.verbose:
+   355                                                           print("Given autocorrelation parameters. "
+   356                                                               + "Computing Gaussian Process model parameters...")
+   357         1            8      8.0      0.0              self.theta_ = self.theta0
+   358                                                       self.reduced_likelihood_function_value_, par = \
+   359         1         5501   5501.0     34.2                  self.reduced_likelihood_function()
+   360         1           19     19.0      0.1              if np.isinf(self.reduced_likelihood_function_value_):
+   361                                                           raise Exception("Bad point. Try increasing theta0.")
+   362
+   363         1            9      9.0      0.1          self.beta = par['beta']
+   364         1            7      7.0      0.0          self.gamma = par['gamma']
+   365         1            8      8.0      0.0          self.sigma2 = par['sigma2']
+   366         1            7      7.0      0.0          self.C = par['C']
+   367         1            6      6.0      0.0          self.Ft = par['Ft']
+   368         1            7      7.0      0.0          self.G = par['G']
+   369
+   370         1            7      7.0      0.0          if self.storage_mode == 'light':
+   371                                                       # Delete heavy data (it will be computed again if required)
+   372                                                       # (it is required only when MSE is wanted in self.predict)
+   373                                                       if self.verbose:
+   374                                                           print("Light storage mode specified. "
+   375                                                               + "Flushing autocorrelation matrix...")
+   376                                                       self.D = None
+   377                                                       self.ij = None
+   378                                                       self.F = None
+   379                                                       self.C = None
+   380                                                       self.Ft = None
+   381                                                       self.G = None
+   382
+   383         1            6      6.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="gaussianprocess-cobyla-minimadelon-oney-predict">
+<h2>GaussianProcess-cobyla-minimadelon-oney-predict<a class="headerlink" href="#gaussianprocess-cobyla-minimadelon-oney-predict" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;fmin_cobyla&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon-oney&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-cobyla-minimadelon-oney-predict-timing.png" src="_images/GaussianProcess-cobyla-minimadelon-oney-predict-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-cobyla-minimadelon-oney-predict-memory.png" src="_images/GaussianProcess-cobyla-minimadelon-oney-predict-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         113 function calls in 0.015 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.015    0.015 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.015    0.015 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.015    0.015 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:385(predict)
+     1    0.010    0.010    0.010    0.010 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:188(manhattan_distances)
+     1    0.003    0.003    0.004    0.004 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     5    0.001    0.000    0.001    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+    10    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+    14    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+     2    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+     2    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+     8    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     5    0.000    0.000    0.000    0.000 {isinstance}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+    14    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: predict at line 385
+Total time: 0.014812 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   385                                               def predict(self, X, eval_MSE=False, batch_size=None):
+   386                                                   """
+   387                                                   This function evaluates the Gaussian Process model at x.
+   388
+   389                                                   Parameters
+   390                                                   ----------
+   391                                                   X : array_like
+   392                                                       An array with shape (n_eval, n_features) giving the point(s) at
+   393                                                       which the prediction(s) should be made.
+   394
+   395                                                   eval_MSE : boolean, optional
+   396                                                       A boolean specifying whether the Mean Squared Error should be
+   397                                                       evaluated or not.
+   398                                                       Default assumes evalMSE = False and evaluates only the BLUP (mean
+   399                                                       prediction).
+   400
+   401                                                   batch_size : integer, optional
+   402                                                       An integer giving the maximum number of points that can be
+   403                                                       evaluated simulatneously (depending on the available memory).
+   404                                                       Default is None so that all given points are evaluated at the same
+   405                                                       time.
+   406
+   407                                                   Returns
+   408                                                   -------
+   409                                                   y : array_like
+   410                                                       An array with shape (n_eval, ) with the Best Linear Unbiased
+   411                                                       Prediction at x.
+   412
+   413                                                   MSE : array_like, optional (if eval_MSE == True)
+   414                                                       An array with shape (n_eval, ) with the Mean Squared Error at x.
+   415                                                   """
+   416
+   417                                                   # Check input shapes
+   418         1           46     46.0      0.3          X = array2d(X)
+   419         1            8      8.0      0.1          n_eval, n_features_X = X.shape
+   420         1            7      7.0      0.0          n_samples, n_features = self.X.shape
+   421
+   422                                                   # Run input checks
+   423         1          172    172.0      1.2          self._check_params(n_samples)
+   424
+   425         1            7      7.0      0.0          if n_features_X != n_features:
+   426                                                       raise ValueError(("The number of features in X (X.shape[1] = %d) "
+   427                                                                      + "should match the sample size used for fit() "
+   428                                                                      + "which is %d.") % (n_features_X, n_features))
+   429
+   430         1            6      6.0      0.0          if batch_size is None:
+   431                                                       # No memory management
+   432                                                       # (evaluates all given points in a single batch run)
+   433
+   434                                                       # Normalize input
+   435         1          308    308.0      2.1              X = (X - self.X_mean) / self.X_std
+   436
+   437                                                       # Initialize output
+   438         1           17     17.0      0.1              y = np.zeros(n_eval)
+   439         1            6      6.0      0.0              if eval_MSE:
+   440                                                           MSE = np.zeros(n_eval)
+   441
+   442                                                       # Get pairwise componentwise L1-distances to the input training set
+   443         1        10101  10101.0     68.2              dx = manhattan_distances(X, Y=self.X, sum_over_features=False)
+   444                                                       # Get regression function and correlation
+   445         1           66     66.0      0.4              f = self.regr(X)
+   446         1         3976   3976.0     26.8              r = self.corr(self.theta_, dx).reshape(n_eval, n_samples)
+   447
+   448                                                       # Scaled predictor
+   449         1           42     42.0      0.3              y_ = np.dot(f, self.beta) + np.dot(r, self.gamma)
+   450
+   451                                                       # Predictor
+   452         1           37     37.0      0.2              y = (self.y_mean + self.y_std * y_).ravel()
+   453
+   454                                                       # Mean Squared Error
+   455         1            7      7.0      0.0              if eval_MSE:
+   456                                                           C = self.C
+   457                                                           if C is None:
+   458                                                               # Light storage mode (need to recompute C, F, Ft and G)
+   459                                                               if self.verbose:
+   460                                                                   print("This GaussianProcess used 'light' storage mode "
+   461                                                                       + "at instanciation. Need to recompute "
+   462                                                                       + "autocorrelation matrix...")
+   463                                                               reduced_likelihood_function_value, par = \
+   464                                                                   self.reduced_likelihood_function()
+   465                                                               self.C = par['C']
+   466                                                               self.Ft = par['Ft']
+   467                                                               self.G = par['G']
+   468
+   469                                                           rt = solve_triangular(self.C, r.T, lower=True)
+   470
+   471                                                           if self.beta0 is None:
+   472                                                               # Universal Kriging
+   473                                                               u = solve_triangular(self.G.T,
+   474                                                                                    np.dot(self.Ft.T, rt) - f.T)
+   475                                                           else:
+   476                                                               # Ordinary Kriging
+   477                                                               u = np.zeros(y.shape)
+   478
+   479                                                           MSE = self.sigma2 * (1. - (rt ** 2.).sum(axis=0)
+   480                                                                                   + (u ** 2.).sum(axis=0))
+   481
+   482                                                           # Mean Squared Error might be slightly negative depending on
+   483                                                           # machine precision: force to zero!
+   484                                                           MSE[MSE &lt; 0.] = 0.
+   485
+   486                                                           return y, MSE
+   487
+   488                                                       else:
+   489
+   490         1            6      6.0      0.0                  return y
+   491
+   492                                                   else:
+   493                                                       # Memory management
+   494
+   495                                                       if type(batch_size) is not int or batch_size &lt;= 0:
+   496                                                           raise Exception("batch_size must be a positive integer")
+   497
+   498                                                       if eval_MSE:
+   499
+   500                                                           y, MSE = np.zeros(n_eval), np.zeros(n_eval)
+   501                                                           for k in range(max(1, n_eval / batch_size)):
+   502                                                               batch_from = k * batch_size
+   503                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   504                                                               y[batch_from:batch_to], MSE[batch_from:batch_to] = \
+   505                                                                   self.predict(X[batch_from:batch_to],
+   506                                                                                eval_MSE=eval_MSE, batch_size=None)
+   507
+   508                                                           return y, MSE
+   509
+   510                                                       else:
+   511
+   512                                                           y = np.zeros(n_eval)
+   513                                                           for k in range(max(1, n_eval / batch_size)):
+   514                                                               batch_from = k * batch_size
+   515                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   516                                                               y[batch_from:batch_to] = \
+   517                                                                   self.predict(X[batch_from:batch_to],
+   518                                                                                eval_MSE=eval_MSE, batch_size=None)
+   519
+   520                                                           return y</pre>
+</div>
+</div>
+</div>
+<div class="section" id="gaussianprocess-cobyla-blobs-fit">
+<h2>GaussianProcess-cobyla-blobs-fit<a class="headerlink" href="#gaussianprocess-cobyla-blobs-fit" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;fmin_cobyla&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-cobyla-blobs-fit-timing.png" src="_images/GaussianProcess-cobyla-blobs-fit-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-cobyla-blobs-fit-memory.png" src="_images/GaussianProcess-cobyla-blobs-fit-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         625 function calls in 0.173 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.173    0.173 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.173    0.173 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.001    0.001    0.173    0.173 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:250(fit)
+     1    0.061    0.061    0.083    0.083 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:28(l1_cross_distances)
+     1    0.016    0.016    0.081    0.081 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:522(reduced_likelihood_function)
+     1    0.028    0.028    0.035    0.035 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     3    0.021    0.007    0.021    0.007 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.016    0.016 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:30(cholesky)
+     1    0.013    0.013    0.016    0.016 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:13(_cholesky)
+     2    0.000    0.000    0.014    0.007 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     4    0.014    0.004    0.014    0.004 {method 'sum' of 'numpy.ndarray' objects}
+    11    0.009    0.001    0.012    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/function_base.py:526(asarray_chkfinite)
+     4    0.002    0.001    0.012    0.003 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/basic.py:72(solve_triangular)
+     4    0.000    0.000    0.009    0.002 {map}
+    24    0.003    0.000    0.003    0.000 {method 'any' of 'numpy.ndarray' objects}
+   301    0.001    0.000    0.001    0.000 {numpy.core.multiarray.arange}
+     1    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:169(eye)
+     8    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:60(get_lapack_funcs)
+     2    0.001    0.000    0.001    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2377(std)
+     2    0.001    0.000    0.001    0.000 {method 'std' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_qr.py:16(qr)
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:45(find_best_lapack_type)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1836(amin)
+     1    0.000    0.000    0.000    0.000 {method 'min' of 'numpy.ndarray' objects}
+    22    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_svd.py:14(svd)
+     2    0.000    0.000    0.000    0.000 {method 'mean' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:98(triu)
+     3    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+    13    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:23(cast_to_lapack_prefix)
+    25    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:20(tri)
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:220(diag)
+    26    0.000    0.000    0.000    0.000 {issubclass}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+    10    0.000    0.000    0.000    0.000 {range}
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+    16    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     1    0.000    0.000    0.000    0.000 {method 'outer' of 'numpy.ufunc' objects}
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:449(isfortran)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+    24    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+    27    0.000    0.000    0.000    0.000 {len}
+     2    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.generic' objects}
+     9    0.000    0.000    0.000    0.000 {method 'sort' of 'list' objects}
+     8    0.000    0.000    0.000    0.000 {getattr}
+     2    0.000    0.000    0.000    0.000 {isinstance}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     7    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/misc.py:22(_datacopied)
+     1    0.000    0.000    0.000    0.000 {method 'prod' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: fit at line 250
+Total time: 0.173479 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   250                                               def fit(self, X, y):
+   251                                                   """
+   252                                                   The Gaussian Process model fitting method.
+   253
+   254                                                   Parameters
+   255                                                   ----------
+   256                                                   X : double array_like
+   257                                                       An array with shape (n_samples, n_features) with the input at which
+   258                                                       observations were made.
+   259
+   260                                                   y : double array_like
+   261                                                       An array with shape (n_features, ) with the observations of the
+   262                                                       scalar output to be predicted.
+   263
+   264                                                   Returns
+   265                                                   -------
+   266                                                   gp : self
+   267                                                       A fitted Gaussian Process model object awaiting data to perform
+   268                                                       predictions.
+   269                                                   """
+   270         1           24     24.0      0.0          self.random_state = check_random_state(self.random_state)
+   271
+   272                                                   # Force data to 2D numpy.array
+   273         1           46     46.0      0.0          X = array2d(np.asarray(X))
+   274         1           23     23.0      0.0          y = np.asarray(y).ravel()[:, np.newaxis]
+   275
+   276                                                   # Check shapes of DOE &amp; observations
+   277         1            7      7.0      0.0          n_samples_X, n_features = X.shape
+   278         1            7      7.0      0.0          n_samples_y = y.shape[0]
+   279
+   280         1            6      6.0      0.0          if n_samples_X != n_samples_y:
+   281                                                       raise ValueError("X and y must have the same number of rows.")
+   282                                                   else:
+   283         1            6      6.0      0.0              n_samples = n_samples_X
+   284
+   285                                                   # Run input checks
+   286         1          155    155.0      0.1          self._check_params(n_samples)
+   287
+   288                                                   # Normalize data or don't
+   289         1            7      7.0      0.0          if self.normalize:
+   290         1          118    118.0      0.1              X_mean = np.mean(X, axis=0)
+   291         1          326    326.0      0.2              X_std = np.std(X, axis=0)
+   292         1           46     46.0      0.0              y_mean = np.mean(y, axis=0)
+   293         1           89     89.0      0.1              y_std = np.std(y, axis=0)
+   294         1           35     35.0      0.0              X_std[X_std == 0.] = 1.
+   295         1           22     22.0      0.0              y_std[y_std == 0.] = 1.
+   296                                                       # center and scale X if necessary
+   297         1          390    390.0      0.2              X = (X - X_mean) / X_std
+   298         1           40     40.0      0.0              y = (y - y_mean) / y_std
+   299                                                   else:
+   300                                                       X_mean = np.zeros(1)
+   301                                                       X_std = np.ones(1)
+   302                                                       y_mean = np.zeros(1)
+   303                                                       y_std = np.ones(1)
+   304
+   305                                                   # Calculate matrix of distances D between samples
+   306         1        83673  83673.0     48.2          D, ij = l1_cross_distances(X)
+   307         1         7570   7570.0      4.4          if np.min(np.sum(D, axis=1)) == 0. \
+   308                                                                               and self.corr != correlation.pure_nugget:
+   309                                                       raise Exception("Multiple input features cannot have the same"
+   310                                                               " value")
+   311
+   312                                                   # Regression matrix and parameters
+   313         1           55     55.0      0.0          F = self.regr(X)
+   314         1            7      7.0      0.0          n_samples_F = F.shape[0]
+   315         1            8      8.0      0.0          if F.ndim &gt; 1:
+   316         1            8      8.0      0.0              p = F.shape[1]
+   317                                                   else:
+   318                                                       p = 1
+   319         1            7      7.0      0.0          if n_samples_F != n_samples:
+   320                                                       raise Exception("Number of rows in F and X do not match. Most "
+   321                                                                     + "likely something is going wrong with the "
+   322                                                                     + "regression model.")
+   323         1            6      6.0      0.0          if p &gt; n_samples_F:
+   324                                                       raise Exception(("Ordinary least squares problem is undetermined "
+   325                                                                      + "n_samples=%d must be greater than the "
+   326                                                                      + "regression model size p=%d.") % (n_samples, p))
+   327         1            6      6.0      0.0          if self.beta0 is not None:
+   328                                                       if self.beta0.shape[0] != p:
+   329                                                           raise Exception("Shapes of beta0 and F do not match.")
+   330
+   331                                                   # Set attributes
+   332         1            9      9.0      0.0          self.X = X
+   333         1            7      7.0      0.0          self.y = y
+   334         1            7      7.0      0.0          self.D = D
+   335         1            7      7.0      0.0          self.ij = ij
+   336         1           15     15.0      0.0          self.F = F
+   337         1           14     14.0      0.0          self.X_mean, self.X_std = X_mean, X_std
+   338         1            9      9.0      0.0          self.y_mean, self.y_std = y_mean, y_std
+   339
+   340                                                   # Determine Gaussian Process model parameters
+   341         1            8      8.0      0.0          if self.thetaL is not None and self.thetaU is not None:
+   342                                                       # Maximum Likelihood Estimation of the parameters
+   343                                                       if self.verbose:
+   344                                                           print("Performing Maximum Likelihood Estimation of the "
+   345                                                               + "autocorrelation parameters...")
+   346                                                       self.theta_, self.reduced_likelihood_function_value_, par = \
+   347                                                           self._arg_max_reduced_likelihood_function()
+   348                                                       if np.isinf(self.reduced_likelihood_function_value_):
+   349                                                           raise Exception("Bad parameter region. "
+   350                                                                         + "Try increasing upper bound")
+   351
+   352                                                   else:
+   353                                                       # Given parameters
+   354         1            7      7.0      0.0              if self.verbose:
+   355                                                           print("Given autocorrelation parameters. "
+   356                                                               + "Computing Gaussian Process model parameters...")
+   357         1            8      8.0      0.0              self.theta_ = self.theta0
+   358                                                       self.reduced_likelihood_function_value_, par = \
+   359         1        80606  80606.0     46.5                  self.reduced_likelihood_function()
+   360         1           35     35.0      0.0              if np.isinf(self.reduced_likelihood_function_value_):
+   361                                                           raise Exception("Bad point. Try increasing theta0.")
+   362
+   363         1            8      8.0      0.0          self.beta = par['beta']
+   364         1            7      7.0      0.0          self.gamma = par['gamma']
+   365         1            9      9.0      0.0          self.sigma2 = par['sigma2']
+   366         1            8      8.0      0.0          self.C = par['C']
+   367         1            7      7.0      0.0          self.Ft = par['Ft']
+   368         1            7      7.0      0.0          self.G = par['G']
+   369
+   370         1            8      8.0      0.0          if self.storage_mode == 'light':
+   371                                                       # Delete heavy data (it will be computed again if required)
+   372                                                       # (it is required only when MSE is wanted in self.predict)
+   373                                                       if self.verbose:
+   374                                                           print("Light storage mode specified. "
+   375                                                               + "Flushing autocorrelation matrix...")
+   376                                                       self.D = None
+   377                                                       self.ij = None
+   378                                                       self.F = None
+   379                                                       self.C = None
+   380                                                       self.Ft = None
+   381                                                       self.G = None
+   382
+   383         1            6      6.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="gaussianprocess-cobyla-blobs-predict">
+<h2>GaussianProcess-cobyla-blobs-predict<a class="headerlink" href="#gaussianprocess-cobyla-blobs-predict" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;fmin_cobyla&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-cobyla-blobs-predict-timing.png" src="_images/GaussianProcess-cobyla-blobs-predict-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-cobyla-blobs-predict-memory.png" src="_images/GaussianProcess-cobyla-blobs-predict-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         113 function calls in 0.153 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.153    0.153 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.002    0.002    0.153    0.153 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.151    0.151 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:385(predict)
+     1    0.101    0.101    0.102    0.102 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:188(manhattan_distances)
+     1    0.038    0.038    0.048    0.048 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     5    0.010    0.002    0.010    0.002 {method 'sum' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.010    0.010 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+    10    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+    14    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+     2    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     2    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     8    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     5    0.000    0.000    0.000    0.000 {isinstance}
+    14    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: predict at line 385
+Total time: 0.150145 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   385                                               def predict(self, X, eval_MSE=False, batch_size=None):
+   386                                                   """
+   387                                                   This function evaluates the Gaussian Process model at x.
+   388
+   389                                                   Parameters
+   390                                                   ----------
+   391                                                   X : array_like
+   392                                                       An array with shape (n_eval, n_features) giving the point(s) at
+   393                                                       which the prediction(s) should be made.
+   394
+   395                                                   eval_MSE : boolean, optional
+   396                                                       A boolean specifying whether the Mean Squared Error should be
+   397                                                       evaluated or not.
+   398                                                       Default assumes evalMSE = False and evaluates only the BLUP (mean
+   399                                                       prediction).
+   400
+   401                                                   batch_size : integer, optional
+   402                                                       An integer giving the maximum number of points that can be
+   403                                                       evaluated simulatneously (depending on the available memory).
+   404                                                       Default is None so that all given points are evaluated at the same
+   405                                                       time.
+   406
+   407                                                   Returns
+   408                                                   -------
+   409                                                   y : array_like
+   410                                                       An array with shape (n_eval, ) with the Best Linear Unbiased
+   411                                                       Prediction at x.
+   412
+   413                                                   MSE : array_like, optional (if eval_MSE == True)
+   414                                                       An array with shape (n_eval, ) with the Mean Squared Error at x.
+   415                                                   """
+   416
+   417                                                   # Check input shapes
+   418         1           53     53.0      0.0          X = array2d(X)
+   419         1            7      7.0      0.0          n_eval, n_features_X = X.shape
+   420         1            7      7.0      0.0          n_samples, n_features = self.X.shape
+   421
+   422                                                   # Run input checks
+   423         1          189    189.0      0.1          self._check_params(n_samples)
+   424
+   425         1            7      7.0      0.0          if n_features_X != n_features:
+   426                                                       raise ValueError(("The number of features in X (X.shape[1] = %d) "
+   427                                                                      + "should match the sample size used for fit() "
+   428                                                                      + "which is %d.") % (n_features_X, n_features))
+   429
+   430         1            6      6.0      0.0          if batch_size is None:
+   431                                                       # No memory management
+   432                                                       # (evaluates all given points in a single batch run)
+   433
+   434                                                       # Normalize input
+   435         1          352    352.0      0.2              X = (X - self.X_mean) / self.X_std
+   436
+   437                                                       # Initialize output
+   438         1           17     17.0      0.0              y = np.zeros(n_eval)
+   439         1            7      7.0      0.0              if eval_MSE:
+   440                                                           MSE = np.zeros(n_eval)
+   441
+   442                                                       # Get pairwise componentwise L1-distances to the input training set
+   443         1       101484 101484.0     67.6              dx = manhattan_distances(X, Y=self.X, sum_over_features=False)
+   444                                                       # Get regression function and correlation
+   445         1           62     62.0      0.0              f = self.regr(X)
+   446         1        47631  47631.0     31.7              r = self.corr(self.theta_, dx).reshape(n_eval, n_samples)
+   447
+   448                                                       # Scaled predictor
+   449         1          264    264.0      0.2              y_ = np.dot(f, self.beta) + np.dot(r, self.gamma)
+   450
+   451                                                       # Predictor
+   452         1           47     47.0      0.0              y = (self.y_mean + self.y_std * y_).ravel()
+   453
+   454                                                       # Mean Squared Error
+   455         1            6      6.0      0.0              if eval_MSE:
+   456                                                           C = self.C
+   457                                                           if C is None:
+   458                                                               # Light storage mode (need to recompute C, F, Ft and G)
+   459                                                               if self.verbose:
+   460                                                                   print("This GaussianProcess used 'light' storage mode "
+   461                                                                       + "at instanciation. Need to recompute "
+   462                                                                       + "autocorrelation matrix...")
+   463                                                               reduced_likelihood_function_value, par = \
+   464                                                                   self.reduced_likelihood_function()
+   465                                                               self.C = par['C']
+   466                                                               self.Ft = par['Ft']
+   467                                                               self.G = par['G']
+   468
+   469                                                           rt = solve_triangular(self.C, r.T, lower=True)
+   470
+   471                                                           if self.beta0 is None:
+   472                                                               # Universal Kriging
+   473                                                               u = solve_triangular(self.G.T,
+   474                                                                                    np.dot(self.Ft.T, rt) - f.T)
+   475                                                           else:
+   476                                                               # Ordinary Kriging
+   477                                                               u = np.zeros(y.shape)
+   478
+   479                                                           MSE = self.sigma2 * (1. - (rt ** 2.).sum(axis=0)
+   480                                                                                   + (u ** 2.).sum(axis=0))
+   481
+   482                                                           # Mean Squared Error might be slightly negative depending on
+   483                                                           # machine precision: force to zero!
+   484                                                           MSE[MSE &lt; 0.] = 0.
+   485
+   486                                                           return y, MSE
+   487
+   488                                                       else:
+   489
+   490         1            6      6.0      0.0                  return y
+   491
+   492                                                   else:
+   493                                                       # Memory management
+   494
+   495                                                       if type(batch_size) is not int or batch_size &lt;= 0:
+   496                                                           raise Exception("batch_size must be a positive integer")
+   497
+   498                                                       if eval_MSE:
+   499
+   500                                                           y, MSE = np.zeros(n_eval), np.zeros(n_eval)
+   501                                                           for k in range(max(1, n_eval / batch_size)):
+   502                                                               batch_from = k * batch_size
+   503                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   504                                                               y[batch_from:batch_to], MSE[batch_from:batch_to] = \
+   505                                                                   self.predict(X[batch_from:batch_to],
+   506                                                                                eval_MSE=eval_MSE, batch_size=None)
+   507
+   508                                                           return y, MSE
+   509
+   510                                                       else:
+   511
+   512                                                           y = np.zeros(n_eval)
+   513                                                           for k in range(max(1, n_eval / batch_size)):
+   514                                                               batch_from = k * batch_size
+   515                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   516                                                               y[batch_from:batch_to] = \
+   517                                                                   self.predict(X[batch_from:batch_to],
+   518                                                                                eval_MSE=eval_MSE, batch_size=None)
+   519
+   520                                                           return y</pre>
+</div>
+</div>
+</div>
+<div class="section" id="gaussianprocess-welch-minimadelon-oney-fit">
+<h2>GaussianProcess-Welch-minimadelon-oney-fit<a class="headerlink" href="#gaussianprocess-welch-minimadelon-oney-fit" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;Welch&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon-oney&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-Welch-minimadelon-oney-fit-timing.png" src="_images/GaussianProcess-Welch-minimadelon-oney-fit-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-Welch-minimadelon-oney-fit-memory.png" src="_images/GaussianProcess-Welch-minimadelon-oney-fit-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         355 function calls in 0.016 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.016    0.016 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.016    0.016 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.001    0.001    0.016    0.016 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:250(fit)
+     1    0.006    0.006    0.008    0.008 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:28(l1_cross_distances)
+     1    0.000    0.000    0.005    0.005 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:522(reduced_likelihood_function)
+     1    0.002    0.002    0.003    0.003 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     3    0.002    0.001    0.002    0.001 {numpy.core.multiarray.zeros}
+     2    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     4    0.001    0.000    0.001    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/basic.py:72(solve_triangular)
+    11    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/function_base.py:526(asarray_chkfinite)
+     2    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2377(std)
+     2    0.001    0.000    0.001    0.000 {method 'std' of 'numpy.ndarray' objects}
+     8    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:60(get_lapack_funcs)
+     4    0.000    0.000    0.001    0.000 {map}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_qr.py:16(qr)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:30(cholesky)
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:45(find_best_lapack_type)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:13(_cholesky)
+    24    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+     2    0.000    0.000    0.000    0.000 {method 'mean' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_svd.py:14(svd)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+    22    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+    31    0.000    0.000    0.000    0.000 {numpy.core.multiarray.arange}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:98(triu)
+     3    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+    13    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:23(cast_to_lapack_prefix)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:20(tri)
+    25    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1836(amin)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+     1    0.000    0.000    0.000    0.000 {method 'min' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:169(eye)
+    26    0.000    0.000    0.000    0.000 {issubclass}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:220(diag)
+     1    0.000    0.000    0.000    0.000 {method 'outer' of 'numpy.ufunc' objects}
+    10    0.000    0.000    0.000    0.000 {range}
+    16    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+    27    0.000    0.000    0.000    0.000 {len}
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:449(isfortran)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+    24    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     2    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.generic' objects}
+     8    0.000    0.000    0.000    0.000 {getattr}
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 {isinstance}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     9    0.000    0.000    0.000    0.000 {method 'sort' of 'list' objects}
+     2    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     7    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/misc.py:22(_datacopied)
+     1    0.000    0.000    0.000    0.000 {method 'prod' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: fit at line 250
+Total time: 0.016061 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   250                                               def fit(self, X, y):
+   251                                                   """
+   252                                                   The Gaussian Process model fitting method.
+   253
+   254                                                   Parameters
+   255                                                   ----------
+   256                                                   X : double array_like
+   257                                                       An array with shape (n_samples, n_features) with the input at which
+   258                                                       observations were made.
+   259
+   260                                                   y : double array_like
+   261                                                       An array with shape (n_features, ) with the observations of the
+   262                                                       scalar output to be predicted.
+   263
+   264                                                   Returns
+   265                                                   -------
+   266                                                   gp : self
+   267                                                       A fitted Gaussian Process model object awaiting data to perform
+   268                                                       predictions.
+   269                                                   """
+   270         1           17     17.0      0.1          self.random_state = check_random_state(self.random_state)
+   271
+   272                                                   # Force data to 2D numpy.array
+   273         1           46     46.0      0.3          X = array2d(np.asarray(X))
+   274         1           27     27.0      0.2          y = np.asarray(y).ravel()[:, np.newaxis]
+   275
+   276                                                   # Check shapes of DOE &amp; observations
+   277         1            7      7.0      0.0          n_samples_X, n_features = X.shape
+   278         1            7      7.0      0.0          n_samples_y = y.shape[0]
+   279
+   280         1            6      6.0      0.0          if n_samples_X != n_samples_y:
+   281                                                       raise ValueError("X and y must have the same number of rows.")
+   282                                                   else:
+   283         1            7      7.0      0.0              n_samples = n_samples_X
+   284
+   285                                                   # Run input checks
+   286         1          161    161.0      1.0          self._check_params(n_samples)
+   287
+   288                                                   # Normalize data or don't
+   289         1            7      7.0      0.0          if self.normalize:
+   290         1          145    145.0      0.9              X_mean = np.mean(X, axis=0)
+   291         1          377    377.0      2.3              X_std = np.std(X, axis=0)
+   292         1           35     35.0      0.2              y_mean = np.mean(y, axis=0)
+   293         1           76     76.0      0.5              y_std = np.std(y, axis=0)
+   294         1           35     35.0      0.2              X_std[X_std == 0.] = 1.
+   295         1           21     21.0      0.1              y_std[y_std == 0.] = 1.
+   296                                                       # center and scale X if necessary
+   297         1          340    340.0      2.1              X = (X - X_mean) / X_std
+   298         1           32     32.0      0.2              y = (y - y_mean) / y_std
+   299                                                   else:
+   300                                                       X_mean = np.zeros(1)
+   301                                                       X_std = np.ones(1)
+   302                                                       y_mean = np.zeros(1)
+   303                                                       y_std = np.ones(1)
+   304
+   305                                                   # Calculate matrix of distances D between samples
+   306         1         8214   8214.0     51.1          D, ij = l1_cross_distances(X)
+   307         1          842    842.0      5.2          if np.min(np.sum(D, axis=1)) == 0. \
+   308                                                                               and self.corr != correlation.pure_nugget:
+   309                                                       raise Exception("Multiple input features cannot have the same"
+   310                                                               " value")
+   311
+   312                                                   # Regression matrix and parameters
+   313         1           51     51.0      0.3          F = self.regr(X)
+   314         1            8      8.0      0.0          n_samples_F = F.shape[0]
+   315         1            8      8.0      0.0          if F.ndim &gt; 1:
+   316         1            8      8.0      0.0              p = F.shape[1]
+   317                                                   else:
+   318                                                       p = 1
+   319         1            6      6.0      0.0          if n_samples_F != n_samples:
+   320                                                       raise Exception("Number of rows in F and X do not match. Most "
+   321                                                                     + "likely something is going wrong with the "
+   322                                                                     + "regression model.")
+   323         1            6      6.0      0.0          if p &gt; n_samples_F:
+   324                                                       raise Exception(("Ordinary least squares problem is undetermined "
+   325                                                                      + "n_samples=%d must be greater than the "
+   326                                                                      + "regression model size p=%d.") % (n_samples, p))
+   327         1            6      6.0      0.0          if self.beta0 is not None:
+   328                                                       if self.beta0.shape[0] != p:
+   329                                                           raise Exception("Shapes of beta0 and F do not match.")
+   330
+   331                                                   # Set attributes
+   332         1            7      7.0      0.0          self.X = X
+   333         1            7      7.0      0.0          self.y = y
+   334         1            7      7.0      0.0          self.D = D
+   335         1            6      6.0      0.0          self.ij = ij
+   336         1            6      6.0      0.0          self.F = F
+   337         1            6      6.0      0.0          self.X_mean, self.X_std = X_mean, X_std
+   338         1            9      9.0      0.1          self.y_mean, self.y_std = y_mean, y_std
+   339
+   340                                                   # Determine Gaussian Process model parameters
+   341         1            9      9.0      0.1          if self.thetaL is not None and self.thetaU is not None:
+   342                                                       # Maximum Likelihood Estimation of the parameters
+   343                                                       if self.verbose:
+   344                                                           print("Performing Maximum Likelihood Estimation of the "
+   345                                                               + "autocorrelation parameters...")
+   346                                                       self.theta_, self.reduced_likelihood_function_value_, par = \
+   347                                                           self._arg_max_reduced_likelihood_function()
+   348                                                       if np.isinf(self.reduced_likelihood_function_value_):
+   349                                                           raise Exception("Bad parameter region. "
+   350                                                                         + "Try increasing upper bound")
+   351
+   352                                                   else:
+   353                                                       # Given parameters
+   354         1           13     13.0      0.1              if self.verbose:
+   355                                                           print("Given autocorrelation parameters. "
+   356                                                               + "Computing Gaussian Process model parameters...")
+   357         1            8      8.0      0.0              self.theta_ = self.theta0
+   358                                                       self.reduced_likelihood_function_value_, par = \
+   359         1         5413   5413.0     33.7                  self.reduced_likelihood_function()
+   360         1           20     20.0      0.1              if np.isinf(self.reduced_likelihood_function_value_):
+   361                                                           raise Exception("Bad point. Try increasing theta0.")
+   362
+   363         1            7      7.0      0.0          self.beta = par['beta']
+   364         1            7      7.0      0.0          self.gamma = par['gamma']
+   365         1            8      8.0      0.0          self.sigma2 = par['sigma2']
+   366         1            7      7.0      0.0          self.C = par['C']
+   367         1            7      7.0      0.0          self.Ft = par['Ft']
+   368         1            7      7.0      0.0          self.G = par['G']
+   369
+   370         1            6      6.0      0.0          if self.storage_mode == 'light':
+   371                                                       # Delete heavy data (it will be computed again if required)
+   372                                                       # (it is required only when MSE is wanted in self.predict)
+   373                                                       if self.verbose:
+   374                                                           print("Light storage mode specified. "
+   375                                                               + "Flushing autocorrelation matrix...")
+   376                                                       self.D = None
+   377                                                       self.ij = None
+   378                                                       self.F = None
+   379                                                       self.C = None
+   380                                                       self.Ft = None
+   381                                                       self.G = None
+   382
+   383         1            6      6.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="gaussianprocess-welch-minimadelon-oney-predict">
+<h2>GaussianProcess-Welch-minimadelon-oney-predict<a class="headerlink" href="#gaussianprocess-welch-minimadelon-oney-predict" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;Welch&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon-oney&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-Welch-minimadelon-oney-predict-timing.png" src="_images/GaussianProcess-Welch-minimadelon-oney-predict-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-Welch-minimadelon-oney-predict-memory.png" src="_images/GaussianProcess-Welch-minimadelon-oney-predict-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         113 function calls in 0.015 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.015    0.015 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.015    0.015 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.015    0.015 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:385(predict)
+     1    0.010    0.010    0.010    0.010 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:188(manhattan_distances)
+     1    0.003    0.003    0.004    0.004 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     5    0.001    0.000    0.001    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+    10    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+    14    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+     2    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+     2    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+     8    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     5    0.000    0.000    0.000    0.000 {isinstance}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+    14    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: predict at line 385
+Total time: 0.014861 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   385                                               def predict(self, X, eval_MSE=False, batch_size=None):
+   386                                                   """
+   387                                                   This function evaluates the Gaussian Process model at x.
+   388
+   389                                                   Parameters
+   390                                                   ----------
+   391                                                   X : array_like
+   392                                                       An array with shape (n_eval, n_features) giving the point(s) at
+   393                                                       which the prediction(s) should be made.
+   394
+   395                                                   eval_MSE : boolean, optional
+   396                                                       A boolean specifying whether the Mean Squared Error should be
+   397                                                       evaluated or not.
+   398                                                       Default assumes evalMSE = False and evaluates only the BLUP (mean
+   399                                                       prediction).
+   400
+   401                                                   batch_size : integer, optional
+   402                                                       An integer giving the maximum number of points that can be
+   403                                                       evaluated simulatneously (depending on the available memory).
+   404                                                       Default is None so that all given points are evaluated at the same
+   405                                                       time.
+   406
+   407                                                   Returns
+   408                                                   -------
+   409                                                   y : array_like
+   410                                                       An array with shape (n_eval, ) with the Best Linear Unbiased
+   411                                                       Prediction at x.
+   412
+   413                                                   MSE : array_like, optional (if eval_MSE == True)
+   414                                                       An array with shape (n_eval, ) with the Mean Squared Error at x.
+   415                                                   """
+   416
+   417                                                   # Check input shapes
+   418         1           45     45.0      0.3          X = array2d(X)
+   419         1            8      8.0      0.1          n_eval, n_features_X = X.shape
+   420         1            8      8.0      0.1          n_samples, n_features = self.X.shape
+   421
+   422                                                   # Run input checks
+   423         1          169    169.0      1.1          self._check_params(n_samples)
+   424
+   425         1            7      7.0      0.0          if n_features_X != n_features:
+   426                                                       raise ValueError(("The number of features in X (X.shape[1] = %d) "
+   427                                                                      + "should match the sample size used for fit() "
+   428                                                                      + "which is %d.") % (n_features_X, n_features))
+   429
+   430         1            6      6.0      0.0          if batch_size is None:
+   431                                                       # No memory management
+   432                                                       # (evaluates all given points in a single batch run)
+   433
+   434                                                       # Normalize input
+   435         1          306    306.0      2.1              X = (X - self.X_mean) / self.X_std
+   436
+   437                                                       # Initialize output
+   438         1           17     17.0      0.1              y = np.zeros(n_eval)
+   439         1            6      6.0      0.0              if eval_MSE:
+   440                                                           MSE = np.zeros(n_eval)
+   441
+   442                                                       # Get pairwise componentwise L1-distances to the input training set
+   443         1        10183  10183.0     68.5              dx = manhattan_distances(X, Y=self.X, sum_over_features=False)
+   444                                                       # Get regression function and correlation
+   445         1           58     58.0      0.4              f = self.regr(X)
+   446         1         3952   3952.0     26.6              r = self.corr(self.theta_, dx).reshape(n_eval, n_samples)
+   447
+   448                                                       # Scaled predictor
+   449         1           41     41.0      0.3              y_ = np.dot(f, self.beta) + np.dot(r, self.gamma)
+   450
+   451                                                       # Predictor
+   452         1           42     42.0      0.3              y = (self.y_mean + self.y_std * y_).ravel()
+   453
+   454                                                       # Mean Squared Error
+   455         1            7      7.0      0.0              if eval_MSE:
+   456                                                           C = self.C
+   457                                                           if C is None:
+   458                                                               # Light storage mode (need to recompute C, F, Ft and G)
+   459                                                               if self.verbose:
+   460                                                                   print("This GaussianProcess used 'light' storage mode "
+   461                                                                       + "at instanciation. Need to recompute "
+   462                                                                       + "autocorrelation matrix...")
+   463                                                               reduced_likelihood_function_value, par = \
+   464                                                                   self.reduced_likelihood_function()
+   465                                                               self.C = par['C']
+   466                                                               self.Ft = par['Ft']
+   467                                                               self.G = par['G']
+   468
+   469                                                           rt = solve_triangular(self.C, r.T, lower=True)
+   470
+   471                                                           if self.beta0 is None:
+   472                                                               # Universal Kriging
+   473                                                               u = solve_triangular(self.G.T,
+   474                                                                                    np.dot(self.Ft.T, rt) - f.T)
+   475                                                           else:
+   476                                                               # Ordinary Kriging
+   477                                                               u = np.zeros(y.shape)
+   478
+   479                                                           MSE = self.sigma2 * (1. - (rt ** 2.).sum(axis=0)
+   480                                                                                   + (u ** 2.).sum(axis=0))
+   481
+   482                                                           # Mean Squared Error might be slightly negative depending on
+   483                                                           # machine precision: force to zero!
+   484                                                           MSE[MSE &lt; 0.] = 0.
+   485
+   486                                                           return y, MSE
+   487
+   488                                                       else:
+   489
+   490         1            6      6.0      0.0                  return y
+   491
+   492                                                   else:
+   493                                                       # Memory management
+   494
+   495                                                       if type(batch_size) is not int or batch_size &lt;= 0:
+   496                                                           raise Exception("batch_size must be a positive integer")
+   497
+   498                                                       if eval_MSE:
+   499
+   500                                                           y, MSE = np.zeros(n_eval), np.zeros(n_eval)
+   501                                                           for k in range(max(1, n_eval / batch_size)):
+   502                                                               batch_from = k * batch_size
+   503                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   504                                                               y[batch_from:batch_to], MSE[batch_from:batch_to] = \
+   505                                                                   self.predict(X[batch_from:batch_to],
+   506                                                                                eval_MSE=eval_MSE, batch_size=None)
+   507
+   508                                                           return y, MSE
+   509
+   510                                                       else:
+   511
+   512                                                           y = np.zeros(n_eval)
+   513                                                           for k in range(max(1, n_eval / batch_size)):
+   514                                                               batch_from = k * batch_size
+   515                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   516                                                               y[batch_from:batch_to] = \
+   517                                                                   self.predict(X[batch_from:batch_to],
+   518                                                                                eval_MSE=eval_MSE, batch_size=None)
+   519
+   520                                                           return y</pre>
+</div>
+</div>
+</div>
+<div class="section" id="gaussianprocess-welch-blobs-fit">
+<h2>GaussianProcess-Welch-blobs-fit<a class="headerlink" href="#gaussianprocess-welch-blobs-fit" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;Welch&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-Welch-blobs-fit-timing.png" src="_images/GaussianProcess-Welch-blobs-fit-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-Welch-blobs-fit-memory.png" src="_images/GaussianProcess-Welch-blobs-fit-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         625 function calls in 0.173 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.173    0.173 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.173    0.173 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.001    0.001    0.173    0.173 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:250(fit)
+     1    0.061    0.061    0.083    0.083 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:28(l1_cross_distances)
+     1    0.016    0.016    0.081    0.081 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:522(reduced_likelihood_function)
+     1    0.028    0.028    0.035    0.035 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     3    0.020    0.007    0.020    0.007 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.017    0.017 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:30(cholesky)
+     1    0.014    0.014    0.017    0.017 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_cholesky.py:13(_cholesky)
+     2    0.000    0.000    0.014    0.007 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     4    0.014    0.004    0.014    0.004 {method 'sum' of 'numpy.ndarray' objects}
+    11    0.009    0.001    0.012    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/function_base.py:526(asarray_chkfinite)
+     4    0.002    0.001    0.012    0.003 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/basic.py:72(solve_triangular)
+     4    0.000    0.000    0.009    0.002 {map}
+    24    0.003    0.000    0.003    0.000 {method 'any' of 'numpy.ndarray' objects}
+   301    0.001    0.000    0.001    0.000 {numpy.core.multiarray.arange}
+     1    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:169(eye)
+     8    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:60(get_lapack_funcs)
+     2    0.001    0.000    0.001    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2377(std)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_qr.py:16(qr)
+     2    0.000    0.000    0.000    0.000 {method 'std' of 'numpy.ndarray' objects}
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:45(find_best_lapack_type)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1836(amin)
+     1    0.000    0.000    0.000    0.000 {method 'min' of 'numpy.ndarray' objects}
+    22    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/decomp_svd.py:14(svd)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+     2    0.000    0.000    0.000    0.000 {method 'mean' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:98(triu)
+     3    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+    13    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/lapack.py:23(cast_to_lapack_prefix)
+    25    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/special_matrices.py:20(tri)
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+    10    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/lib/twodim_base.py:220(diag)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+    26    0.000    0.000    0.000    0.000 {issubclass}
+    16    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     1    0.000    0.000    0.000    0.000 {method 'outer' of 'numpy.ufunc' objects}
+     9    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:449(isfortran)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     9    0.000    0.000    0.000    0.000 {method 'sort' of 'list' objects}
+    27    0.000    0.000    0.000    0.000 {len}
+     2    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.generic' objects}
+     8    0.000    0.000    0.000    0.000 {getattr}
+    24    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     2    0.000    0.000    0.000    0.000 {isinstance}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     7    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/misc.py:22(_datacopied)
+     1    0.000    0.000    0.000    0.000 {method 'prod' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     4    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: fit at line 250
+Total time: 0.173485 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   250                                               def fit(self, X, y):
+   251                                                   """
+   252                                                   The Gaussian Process model fitting method.
+   253
+   254                                                   Parameters
+   255                                                   ----------
+   256                                                   X : double array_like
+   257                                                       An array with shape (n_samples, n_features) with the input at which
+   258                                                       observations were made.
+   259
+   260                                                   y : double array_like
+   261                                                       An array with shape (n_features, ) with the observations of the
+   262                                                       scalar output to be predicted.
+   263
+   264                                                   Returns
+   265                                                   -------
+   266                                                   gp : self
+   267                                                       A fitted Gaussian Process model object awaiting data to perform
+   268                                                       predictions.
+   269                                                   """
+   270         1           18     18.0      0.0          self.random_state = check_random_state(self.random_state)
+   271
+   272                                                   # Force data to 2D numpy.array
+   273         1           44     44.0      0.0          X = array2d(np.asarray(X))
+   274         1           23     23.0      0.0          y = np.asarray(y).ravel()[:, np.newaxis]
+   275
+   276                                                   # Check shapes of DOE &amp; observations
+   277         1            8      8.0      0.0          n_samples_X, n_features = X.shape
+   278         1            7      7.0      0.0          n_samples_y = y.shape[0]
+   279
+   280         1            7      7.0      0.0          if n_samples_X != n_samples_y:
+   281                                                       raise ValueError("X and y must have the same number of rows.")
+   282                                                   else:
+   283         1            7      7.0      0.0              n_samples = n_samples_X
+   284
+   285                                                   # Run input checks
+   286         1          158    158.0      0.1          self._check_params(n_samples)
+   287
+   288                                                   # Normalize data or don't
+   289         1            8      8.0      0.0          if self.normalize:
+   290         1          119    119.0      0.1              X_mean = np.mean(X, axis=0)
+   291         1          313    313.0      0.2              X_std = np.std(X, axis=0)
+   292         1           51     51.0      0.0              y_mean = np.mean(y, axis=0)
+   293         1           89     89.0      0.1              y_std = np.std(y, axis=0)
+   294         1           29     29.0      0.0              X_std[X_std == 0.] = 1.
+   295         1           21     21.0      0.0              y_std[y_std == 0.] = 1.
+   296                                                       # center and scale X if necessary
+   297         1          397    397.0      0.2              X = (X - X_mean) / X_std
+   298         1           40     40.0      0.0              y = (y - y_mean) / y_std
+   299                                                   else:
+   300                                                       X_mean = np.zeros(1)
+   301                                                       X_std = np.ones(1)
+   302                                                       y_mean = np.zeros(1)
+   303                                                       y_std = np.ones(1)
+   304
+   305                                                   # Calculate matrix of distances D between samples
+   306         1        83409  83409.0     48.1          D, ij = l1_cross_distances(X)
+   307         1         7519   7519.0      4.3          if np.min(np.sum(D, axis=1)) == 0. \
+   308                                                                               and self.corr != correlation.pure_nugget:
+   309                                                       raise Exception("Multiple input features cannot have the same"
+   310                                                               " value")
+   311
+   312                                                   # Regression matrix and parameters
+   313         1           55     55.0      0.0          F = self.regr(X)
+   314         1            8      8.0      0.0          n_samples_F = F.shape[0]
+   315         1            8      8.0      0.0          if F.ndim &gt; 1:
+   316         1            8      8.0      0.0              p = F.shape[1]
+   317                                                   else:
+   318                                                       p = 1
+   319         1            7      7.0      0.0          if n_samples_F != n_samples:
+   320                                                       raise Exception("Number of rows in F and X do not match. Most "
+   321                                                                     + "likely something is going wrong with the "
+   322                                                                     + "regression model.")
+   323         1            6      6.0      0.0          if p &gt; n_samples_F:
+   324                                                       raise Exception(("Ordinary least squares problem is undetermined "
+   325                                                                      + "n_samples=%d must be greater than the "
+   326                                                                      + "regression model size p=%d.") % (n_samples, p))
+   327         1            6      6.0      0.0          if self.beta0 is not None:
+   328                                                       if self.beta0.shape[0] != p:
+   329                                                           raise Exception("Shapes of beta0 and F do not match.")
+   330
+   331                                                   # Set attributes
+   332         1            7      7.0      0.0          self.X = X
+   333         1            6      6.0      0.0          self.y = y
+   334         1            7      7.0      0.0          self.D = D
+   335         1            6      6.0      0.0          self.ij = ij
+   336         1            7      7.0      0.0          self.F = F
+   337         1            7      7.0      0.0          self.X_mean, self.X_std = X_mean, X_std
+   338         1            8      8.0      0.0          self.y_mean, self.y_std = y_mean, y_std
+   339
+   340                                                   # Determine Gaussian Process model parameters
+   341         1            8      8.0      0.0          if self.thetaL is not None and self.thetaU is not None:
+   342                                                       # Maximum Likelihood Estimation of the parameters
+   343                                                       if self.verbose:
+   344                                                           print("Performing Maximum Likelihood Estimation of the "
+   345                                                               + "autocorrelation parameters...")
+   346                                                       self.theta_, self.reduced_likelihood_function_value_, par = \
+   347                                                           self._arg_max_reduced_likelihood_function()
+   348                                                       if np.isinf(self.reduced_likelihood_function_value_):
+   349                                                           raise Exception("Bad parameter region. "
+   350                                                                         + "Try increasing upper bound")
+   351
+   352                                                   else:
+   353                                                       # Given parameters
+   354         1            6      6.0      0.0              if self.verbose:
+   355                                                           print("Given autocorrelation parameters. "
+   356                                                               + "Computing Gaussian Process model parameters...")
+   357         1            8      8.0      0.0              self.theta_ = self.theta0
+   358                                                       self.reduced_likelihood_function_value_, par = \
+   359         1        80948  80948.0     46.7                  self.reduced_likelihood_function()
+   360         1           37     37.0      0.0              if np.isinf(self.reduced_likelihood_function_value_):
+   361                                                           raise Exception("Bad point. Try increasing theta0.")
+   362
+   363         1            8      8.0      0.0          self.beta = par['beta']
+   364         1            7      7.0      0.0          self.gamma = par['gamma']
+   365         1            9      9.0      0.0          self.sigma2 = par['sigma2']
+   366         1            6      6.0      0.0          self.C = par['C']
+   367         1            6      6.0      0.0          self.Ft = par['Ft']
+   368         1            7      7.0      0.0          self.G = par['G']
+   369
+   370         1            8      8.0      0.0          if self.storage_mode == 'light':
+   371                                                       # Delete heavy data (it will be computed again if required)
+   372                                                       # (it is required only when MSE is wanted in self.predict)
+   373                                                       if self.verbose:
+   374                                                           print("Light storage mode specified. "
+   375                                                               + "Flushing autocorrelation matrix...")
+   376                                                       self.D = None
+   377                                                       self.ij = None
+   378                                                       self.F = None
+   379                                                       self.C = None
+   380                                                       self.Ft = None
+   381                                                       self.G = None
+   382
+   383         1           14     14.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="gaussianprocess-welch-blobs-predict">
+<h2>GaussianProcess-Welch-blobs-predict<a class="headerlink" href="#gaussianprocess-welch-blobs-predict" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.gaussian_process</span> <span class="kn">import</span> <span class="n">GaussianProcess</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;optimizer&#39;</span><span class="p">:</span> <span class="s">&#39;Welch&#39;</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">GaussianProcess</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/GaussianProcess-Welch-blobs-predict-timing.png" src="_images/GaussianProcess-Welch-blobs-predict-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/GaussianProcess-Welch-blobs-predict-memory.png" src="_images/GaussianProcess-Welch-blobs-predict-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         113 function calls in 0.153 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.153    0.153 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.002    0.002    0.153    0.153 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.151    0.151 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:385(predict)
+     1    0.102    0.102    0.102    0.102 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:188(manhattan_distances)
+     1    0.038    0.038    0.047    0.047 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/correlation_models.py:58(squared_exponential)
+     5    0.010    0.002    0.010    0.002 {method 'sum' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.010    0.010 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py:822(_check_params)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+    10    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/regression_models.py:16(constant)
+    14    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+     2    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     2    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     8    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     5    0.000    0.000    0.000    0.000 {isinstance}
+    14    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     1    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/gaussian_process/gaussian_process.py
+Function: predict at line 385
+Total time: 0.15362 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   385                                               def predict(self, X, eval_MSE=False, batch_size=None):
+   386                                                   """
+   387                                                   This function evaluates the Gaussian Process model at x.
+   388
+   389                                                   Parameters
+   390                                                   ----------
+   391                                                   X : array_like
+   392                                                       An array with shape (n_eval, n_features) giving the point(s) at
+   393                                                       which the prediction(s) should be made.
+   394
+   395                                                   eval_MSE : boolean, optional
+   396                                                       A boolean specifying whether the Mean Squared Error should be
+   397                                                       evaluated or not.
+   398                                                       Default assumes evalMSE = False and evaluates only the BLUP (mean
+   399                                                       prediction).
+   400
+   401                                                   batch_size : integer, optional
+   402                                                       An integer giving the maximum number of points that can be
+   403                                                       evaluated simulatneously (depending on the available memory).
+   404                                                       Default is None so that all given points are evaluated at the same
+   405                                                       time.
+   406
+   407                                                   Returns
+   408                                                   -------
+   409                                                   y : array_like
+   410                                                       An array with shape (n_eval, ) with the Best Linear Unbiased
+   411                                                       Prediction at x.
+   412
+   413                                                   MSE : array_like, optional (if eval_MSE == True)
+   414                                                       An array with shape (n_eval, ) with the Mean Squared Error at x.
+   415                                                   """
+   416
+   417                                                   # Check input shapes
+   418         1           53     53.0      0.0          X = array2d(X)
+   419         1            8      8.0      0.0          n_eval, n_features_X = X.shape
+   420         1           10     10.0      0.0          n_samples, n_features = self.X.shape
+   421
+   422                                                   # Run input checks
+   423         1          195    195.0      0.1          self._check_params(n_samples)
+   424
+   425         1            8      8.0      0.0          if n_features_X != n_features:
+   426                                                       raise ValueError(("The number of features in X (X.shape[1] = %d) "
+   427                                                                      + "should match the sample size used for fit() "
+   428                                                                      + "which is %d.") % (n_features_X, n_features))
+   429
+   430         1            6      6.0      0.0          if batch_size is None:
+   431                                                       # No memory management
+   432                                                       # (evaluates all given points in a single batch run)
+   433
+   434                                                       # Normalize input
+   435         1          332    332.0      0.2              X = (X - self.X_mean) / self.X_std
+   436
+   437                                                       # Initialize output
+   438         1           26     26.0      0.0              y = np.zeros(n_eval)
+   439         1            6      6.0      0.0              if eval_MSE:
+   440                                                           MSE = np.zeros(n_eval)
+   441
+   442                                                       # Get pairwise componentwise L1-distances to the input training set
+   443         1       103949 103949.0     67.7              dx = manhattan_distances(X, Y=self.X, sum_over_features=False)
+   444                                                       # Get regression function and correlation
+   445         1           64     64.0      0.0              f = self.regr(X)
+   446         1        48674  48674.0     31.7              r = self.corr(self.theta_, dx).reshape(n_eval, n_samples)
+   447
+   448                                                       # Scaled predictor
+   449         1          229    229.0      0.1              y_ = np.dot(f, self.beta) + np.dot(r, self.gamma)
+   450
+   451                                                       # Predictor
+   452         1           47     47.0      0.0              y = (self.y_mean + self.y_std * y_).ravel()
+   453
+   454                                                       # Mean Squared Error
+   455         1            7      7.0      0.0              if eval_MSE:
+   456                                                           C = self.C
+   457                                                           if C is None:
+   458                                                               # Light storage mode (need to recompute C, F, Ft and G)
+   459                                                               if self.verbose:
+   460                                                                   print("This GaussianProcess used 'light' storage mode "
+   461                                                                       + "at instanciation. Need to recompute "
+   462                                                                       + "autocorrelation matrix...")
+   463                                                               reduced_likelihood_function_value, par = \
+   464                                                                   self.reduced_likelihood_function()
+   465                                                               self.C = par['C']
+   466                                                               self.Ft = par['Ft']
+   467                                                               self.G = par['G']
+   468
+   469                                                           rt = solve_triangular(self.C, r.T, lower=True)
+   470
+   471                                                           if self.beta0 is None:
+   472                                                               # Universal Kriging
+   473                                                               u = solve_triangular(self.G.T,
+   474                                                                                    np.dot(self.Ft.T, rt) - f.T)
+   475                                                           else:
+   476                                                               # Ordinary Kriging
+   477                                                               u = np.zeros(y.shape)
+   478
+   479                                                           MSE = self.sigma2 * (1. - (rt ** 2.).sum(axis=0)
+   480                                                                                   + (u ** 2.).sum(axis=0))
+   481
+   482                                                           # Mean Squared Error might be slightly negative depending on
+   483                                                           # machine precision: force to zero!
+   484                                                           MSE[MSE &lt; 0.] = 0.
+   485
+   486                                                           return y, MSE
+   487
+   488                                                       else:
+   489
+   490         1            6      6.0      0.0                  return y
+   491
+   492                                                   else:
+   493                                                       # Memory management
+   494
+   495                                                       if type(batch_size) is not int or batch_size &lt;= 0:
+   496                                                           raise Exception("batch_size must be a positive integer")
+   497
+   498                                                       if eval_MSE:
+   499
+   500                                                           y, MSE = np.zeros(n_eval), np.zeros(n_eval)
+   501                                                           for k in range(max(1, n_eval / batch_size)):
+   502                                                               batch_from = k * batch_size
+   503                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   504                                                               y[batch_from:batch_to], MSE[batch_from:batch_to] = \
+   505                                                                   self.predict(X[batch_from:batch_to],
+   506                                                                                eval_MSE=eval_MSE, batch_size=None)
+   507
+   508                                                           return y, MSE
+   509
+   510                                                       else:
+   511
+   512                                                           y = np.zeros(n_eval)
+   513                                                           for k in range(max(1, n_eval / batch_size)):
+   514                                                               batch_from = k * batch_size
+   515                                                               batch_to = min([(k + 1) * batch_size + 1, n_eval + 1])
+   516                                                               y[batch_from:batch_to] = \
+   517                                                                   self.predict(X[batch_from:batch_to],
+   518                                                                                eval_MSE=eval_MSE, batch_size=None)
+   519
+   520                                                           return y</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+
+        <div class="clearer"></div>
+      </div>
+    </div>
+  
+
+    <div class="footer">
+        &copy; .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3. Design by <a href="http://desgrana.es">Desgrana</a>.
+    <span style="padding-left: 5ex;">
+    <a href="_sources/vb_gaussian_process.txt"
+	    rel="nofollow">Show this page source</a>
+    </span>
+    </div>
+     <div class="rel rellarge">
+    
+    <div class="buttonPrevious">
+      <a href="vb_decomposition.html">
+        Previous
+      </a>  
+    </div>
+    <div class="buttonNext">
+      <a href="vb_linear_model.html">
+        Next
+      </a>  
+    </div>
+    
+     </div>
+     <script type="text/javascript">
+       $("div.buttonNext, div.buttonPrevious").hover(
+           function () {
+               $(this).css('background-color', '#FF9C34');
+           },
+           function () {
+               $(this).css('background-color', '#A7D6E2');
+           }
+       );
+     </script>
+  </body>
+</html>

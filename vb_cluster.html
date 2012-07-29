@@ -1,0 +1,1842 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Benchmarks for cluster &mdash; Vbench performance benchmarks for scikit-learn</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.12-git',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/sidebar.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="Vbench performance benchmarks for scikit-learn" href="index.html" />
+    <link rel="next" title="Benchmarks for covariance" href="vb_covariance.html" />
+    <link rel="prev" title="Performance Benchmarks" href="index.html" />
+
+  <!-- Reference the theme's stylesheet on the Google CDN -->
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/excite-bike/jquery-ui.css"
+        type="text/css" rel="Stylesheet" />
+ 
+  <!-- Reference jQuery and jQuery UI from the CDN. Remember
+       that the order of these two elements is important -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+      $(function(){
+        $(".profiler-output").accordion({collapsible: true, header: "p", active: false} );
+      });
+    </script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-22606712-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+  </head>
+  <body>
+
+    <div class="header-wrapper">
+      <div class="header">
+          <p class="logo"><a href="http://scikit-learn.org/">
+            <img src="_static/scikit-learn-logo-small.png" alt="Logo"/>
+          </a>
+          </p><div class="navbar">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="quick_start.html">Speed Quick Start</a></li>
+            <li><a href="http://scikit-learn.org/dev/user_guide.html">User's Guide</a></li>
+            <li><a href="http://scikit-learn.org/dev/developers/performance.html">Performance</a></li>
+            <li><a href="http://github.com/scikit-learn/scikit-learn">Github</a></li>
+            <li><a href="http://github.com/vene/scikit-learn-speed">Speed Github</a></li>
+       </ul>
+</div>
+<!-- end navbar --></div>
+    </div>
+
+    <div class="content-wrapper">
+
+      <div class="sphinxsidebar">
+	<div class="sphinxsidebarwrapper">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Benchmarks for cluster</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#kmeans-minimadelon-fit-unsup">KMeans-minimadelon-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kmeans-minimadelon-predict-unsup">KMeans-minimadelon-predict_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kmeans-blobs-fit-unsup">KMeans-blobs-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#kmeans-blobs-predict-unsup">KMeans-blobs-predict_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minibatchkmeans-minimadelon-fit-unsup">MiniBatchKMeans-minimadelon-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minibatchkmeans-minimadelon-predict-unsup">MiniBatchKMeans-minimadelon-predict_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minibatchkmeans-madelon-fit-unsup">MiniBatchKMeans-madelon-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minibatchkmeans-madelon-predict-unsup">MiniBatchKMeans-madelon-predict_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spectralclustering-minimadelon-fit-unsup">SpectralClustering-minimadelon-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spectralclustering-minimadelon-predict-unsup">SpectralClustering-minimadelon-predict_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spectralclustering-blobs-fit-unsup">SpectralClustering-blobs-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#spectralclustering-blobs-predict-unsup">SpectralClustering-blobs-predict_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ward-minimadelon-fit-unsup">Ward-minimadelon-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ward-blobs-fit-unsup">Ward-blobs-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#meanshift-minimadelon-fit-unsup">MeanShift-minimadelon-fit_unsup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#meanshift-blobs-fit-unsup">MeanShift-blobs-fit_unsup</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vb_covariance.html">Benchmarks for covariance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_decomposition.html">Benchmarks for decomposition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_gaussian_process.html">Benchmarks for gaussian_process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_linear_model.html">Benchmarks for linear_model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_mixture.html">Benchmarks for mixture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_naive_bayes.html">Benchmarks for naive_bayes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_neighbors.html">Benchmarks for neighbors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_pls.html">Benchmarks for pls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_semi_supervised.html">Benchmarks for semi_supervised</a></li>
+<li class="toctree-l1"><a class="reference internal" href="vb_svm.html">Benchmarks for svm</a></li>
+</ul>
+
+          <!--
+	   <div class="rel rellarge">
+	     
+	<!-- rellinks[1:] is an ugly hack to avoid link to module
+	    index  --
+	<div class="rellink">
+	<a href="index.html" title="Performance Benchmarks"
+	    accesskey="P">Previous
+	    <br>
+	    <span class="smallrellink">
+	    Performance Benc...
+	    </span>
+	    <span class="hiddenrellink">
+	    Performance Benchmarks
+	    </span>
+	    
+	    </a>
+	</div>
+	    <div class="spacer">
+	    &nbsp;
+	    </div>
+	
+	<div class="rellink">
+	<a href="vb_covariance.html" title="Benchmarks for covariance"
+	    accesskey="N">Next
+	    <br>
+	    <span class="smallrellink">
+	    Benchmarks for c...
+	    </span>
+	    <span class="hiddenrellink">
+	    Benchmarks for covariance
+	    </span>
+	    
+	    </a>
+	</div>
+	<!-- Ad a link to the 'up' page --
+    </div>
+    <p style="text-align: center; background-color: #FFE4E4">This documentation is
+    for scikit-learn <strong>version 0.12-git</strong>
+    &mdash; <a href="http://scikit-learn.org/stable/support.html#documentation-resources">Other versions</a></p>
+    
+    <h3>Citing</h3>
+    <p>If you use the software, please consider
+    <a href="about.html#citing-scikit-learn">citing scikit-learn</a>.</p>
+    <h3>This page</h3>
+	<ul>
+<li><a class="reference internal" href="#">Benchmarks for cluster</a><ul>
+<li><a class="reference internal" href="#kmeans-minimadelon-fit-unsup">KMeans-minimadelon-fit_unsup</a></li>
+<li><a class="reference internal" href="#kmeans-minimadelon-predict-unsup">KMeans-minimadelon-predict_unsup</a></li>
+<li><a class="reference internal" href="#kmeans-blobs-fit-unsup">KMeans-blobs-fit_unsup</a></li>
+<li><a class="reference internal" href="#kmeans-blobs-predict-unsup">KMeans-blobs-predict_unsup</a></li>
+<li><a class="reference internal" href="#minibatchkmeans-minimadelon-fit-unsup">MiniBatchKMeans-minimadelon-fit_unsup</a></li>
+<li><a class="reference internal" href="#minibatchkmeans-minimadelon-predict-unsup">MiniBatchKMeans-minimadelon-predict_unsup</a></li>
+<li><a class="reference internal" href="#minibatchkmeans-madelon-fit-unsup">MiniBatchKMeans-madelon-fit_unsup</a></li>
+<li><a class="reference internal" href="#minibatchkmeans-madelon-predict-unsup">MiniBatchKMeans-madelon-predict_unsup</a></li>
+<li><a class="reference internal" href="#spectralclustering-minimadelon-fit-unsup">SpectralClustering-minimadelon-fit_unsup</a></li>
+<li><a class="reference internal" href="#spectralclustering-minimadelon-predict-unsup">SpectralClustering-minimadelon-predict_unsup</a></li>
+<li><a class="reference internal" href="#spectralclustering-blobs-fit-unsup">SpectralClustering-blobs-fit_unsup</a></li>
+<li><a class="reference internal" href="#spectralclustering-blobs-predict-unsup">SpectralClustering-blobs-predict_unsup</a></li>
+<li><a class="reference internal" href="#ward-minimadelon-fit-unsup">Ward-minimadelon-fit_unsup</a></li>
+<li><a class="reference internal" href="#ward-blobs-fit-unsup">Ward-blobs-fit_unsup</a></li>
+<li><a class="reference internal" href="#meanshift-minimadelon-fit-unsup">MeanShift-minimadelon-fit_unsup</a></li>
+<li><a class="reference internal" href="#meanshift-blobs-fit-unsup">MeanShift-blobs-fit_unsup</a></li>
+</ul>
+</li>
+</ul>
+
+    
+  -->
+    </div>
+	  </div>
+
+
+      <div class="content">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="benchmarks-for-cluster">
+<h1>Benchmarks for cluster<a class="headerlink" href="#benchmarks-for-cluster" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="kmeans-minimadelon-fit-unsup">
+<h2>KMeans-minimadelon-fit_unsup<a class="headerlink" href="#kmeans-minimadelon-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/KMeans-minimadelon-fit_unsup-timing.png" src="_images/KMeans-minimadelon-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/KMeans-minimadelon-fit_unsup-memory.png" src="_images/KMeans-minimadelon-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         13928 function calls in 0.165 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.165    0.165 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.165    0.165 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.165    0.165 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:738(fit)
+     1    0.000    0.000    0.165    0.165 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:151(k_means)
+    10    0.002    0.000    0.163    0.016 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:303(_kmeans_single)
+    10    0.000    0.000    0.090    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:525(_init_centroids)
+    10    0.018    0.002    0.089    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:36(_k_init)
+   114    0.010    0.000    0.086    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+    24    0.028    0.001    0.042    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:478(_centers)
+   114    0.002    0.000    0.038    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+   343    0.002    0.000    0.030    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+    24    0.000    0.000    0.029    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+    24    0.005    0.000    0.027    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+   114    0.002    0.000    0.024    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+  1066    0.003    0.000    0.020    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+   571    0.006    0.000    0.020    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+  1064    0.019    0.000    0.019    0.000 {method 'sum' of 'numpy.ndarray' objects}
+   114    0.018    0.000    0.018    0.000 {numpy.core.multiarray.dot}
+  1066    0.011    0.000    0.017    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+   228    0.001    0.000    0.016    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+   218    0.011    0.000    0.011    0.000 {method 'mean' of 'numpy.ndarray' objects}
+   343    0.002    0.000    0.010    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+   343    0.004    0.000    0.007    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+  2132    0.004    0.000    0.004    0.000 {method 'split' of 'str' objects}
+   571    0.002    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+   138    0.001    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+   914    0.003    0.000    0.003    0.000 {numpy.core.multiarray.array}
+   216    0.001    0.000    0.002    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+  1268    0.002    0.000    0.002    0.000 {isinstance}
+   343    0.001    0.000    0.002    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+   216    0.002    0.000    0.002    0.000 {method 'any' of 'numpy.ndarray' objects}
+  1257    0.001    0.000    0.001    0.000 {len}
+    84    0.001    0.000    0.001    0.000 {method 'copy' of 'numpy.ndarray' objects}
+    80    0.001    0.000    0.001    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
+    80    0.001    0.000    0.001    0.000 {method 'random_sample' of 'mtrand.RandomState' objects}
+    80    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:757(searchsorted)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:142(_tolerance)
+   106    0.001    0.000    0.001    0.000 {numpy.core.multiarray.empty}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2470(var)
+     1    0.000    0.000    0.000    0.000 {method 'var' of 'numpy.ndarray' objects}
+    80    0.000    0.000    0.000    0.000 {method 'searchsorted' of 'numpy.ndarray' objects}
+    24    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+   343    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:710(_check_fit_data)
+    32    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+    72    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+    59    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:33(as_float_array)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+    10    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+    10    0.000    0.000    0.000    0.000 {method 'randint' of 'mtrand.RandomState' objects}
+     1    0.000    0.000    0.000    0.000 {hasattr}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: fit at line 738
+Total time: 0.18662 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   738                                               def fit(self, X, y=None):
+   739                                                   """Compute k-means"""
+   740
+   741         1            6      6.0      0.0          if not self.k is None:
+   742                                                       n_clusters = self.k
+   743                                                       warnings.warn("Parameter k was renamed to n_clusters",
+   744                                                               DeprecationWarning, stacklevel=2)
+   745                                                       self.n_clusters = n_clusters
+   746                                                   else:
+   747         1            4      4.0      0.0              n_clusters = self.n_clusters
+   748
+   749         1           20     20.0      0.0          self.random_state = check_random_state(self.random_state)
+   750         1          182    182.0      0.1          X = self._check_fit_data(X)
+   751
+   752         1            5      5.0      0.0          self.cluster_centers_, self.labels_, self.inertia_ = k_means(
+   753         1            4      4.0      0.0              X, n_clusters=n_clusters, init=self.init, n_init=self.n_init,
+   754         1            4      4.0      0.0              max_iter=self.max_iter, verbose=self.verbose,
+   755         1            4      4.0      0.0              precompute_distances=self.precompute_distances,
+   756         1            4      4.0      0.0              tol=self.tol, random_state=self.random_state, copy_x=self.copy_x,
+   757         1       186381 186381.0     99.9              n_jobs=self.n_jobs)
+   758         1            6      6.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="kmeans-minimadelon-predict-unsup">
+<h2>KMeans-minimadelon-predict_unsup<a class="headerlink" href="#kmeans-minimadelon-predict-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/KMeans-minimadelon-predict_unsup-timing.png" src="_images/KMeans-minimadelon-predict_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/KMeans-minimadelon-predict_unsup-memory.png" src="_images/KMeans-minimadelon-predict_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         147 function calls in 0.001 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.001    0.001 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:789(predict)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+     6    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     9    0.000    0.000    0.000    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:718(_check_test_data)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+    22    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     6    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+    10    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+    12    0.000    0.000    0.000    0.000 {isinstance}
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+    14    0.000    0.000    0.000    0.000 {len}
+     3    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:734(_check_fitted)
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     1    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 {hasattr}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: predict at line 789
+Total time: 0.001422 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   789                                               def predict(self, X):
+   790                                                   """Predict the closest cluster each sample in X belongs to.
+   791
+   792                                                   In the vector quantization literature, `cluster_centers_` is called
+   793                                                   the code book and each value returned by `predict` is the index of
+   794                                                   the closest code in the code book.
+   795
+   796                                                   Parameters
+   797                                                   ----------
+   798                                                   X: {array-like, sparse matrix}, shape = [n_samples, n_features]
+   799                                                       New data to predict.
+   800
+   801                                                   Returns
+   802                                                   -------
+   803                                                   Y : array, shape [n_samples,]
+   804                                                       Index of the closest center each sample belongs to.
+   805                                                   """
+   806         1           10     10.0      0.7          self._check_fitted()
+   807         1          148    148.0     10.4          X = self._check_test_data(X)
+   808         1           96     96.0      6.8          x_squared_norms = _squared_norms(X)
+   809         1         1168   1168.0     82.1          return _labels_inertia(X, x_squared_norms, self.cluster_centers_)[0]</pre>
+</div>
+</div>
+</div>
+<div class="section" id="kmeans-blobs-fit-unsup">
+<h2>KMeans-blobs-fit_unsup<a class="headerlink" href="#kmeans-blobs-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/KMeans-blobs-fit_unsup-timing.png" src="_images/KMeans-blobs-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/KMeans-blobs-fit_unsup-memory.png" src="_images/KMeans-blobs-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         14077 function calls in 0.163 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.163    0.163 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.163    0.163 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.163    0.163 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:738(fit)
+     1    0.000    0.000    0.163    0.163 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:151(k_means)
+    10    0.001    0.000    0.162    0.016 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:303(_kmeans_single)
+   115    0.012    0.000    0.092    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+    10    0.000    0.000    0.086    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:525(_init_centroids)
+    10    0.012    0.001    0.086    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:36(_k_init)
+    25    0.030    0.001    0.039    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:478(_centers)
+   115    0.002    0.000    0.037    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+    25    0.001    0.000    0.034    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+    25    0.007    0.000    0.032    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+   346    0.002    0.000    0.030    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+   115    0.002    0.000    0.028    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+   115    0.022    0.000    0.022    0.000 {numpy.core.multiarray.dot}
+  1076    0.003    0.000    0.020    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+   576    0.006    0.000    0.019    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+  1072    0.018    0.000    0.018    0.000 {method 'sum' of 'numpy.ndarray' objects}
+  1076    0.012    0.000    0.017    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+   230    0.001    0.000    0.015    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+   346    0.002    0.000    0.010    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+   346    0.004    0.000    0.007    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+   227    0.006    0.000    0.006    0.000 {method 'mean' of 'numpy.ndarray' objects}
+  2152    0.004    0.000    0.004    0.000 {method 'split' of 'str' objects}
+   576    0.002    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+   922    0.003    0.000    0.003    0.000 {numpy.core.multiarray.array}
+   140    0.001    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+   225    0.001    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+  1280    0.002    0.000    0.002    0.000 {isinstance}
+   346    0.001    0.000    0.002    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+   225    0.002    0.000    0.002    0.000 {method 'any' of 'numpy.ndarray' objects}
+    80    0.001    0.000    0.001    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
+  1268    0.001    0.000    0.001    0.000 {len}
+    80    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:757(searchsorted)
+   110    0.001    0.000    0.001    0.000 {numpy.core.multiarray.empty}
+    80    0.001    0.000    0.001    0.000 {method 'random_sample' of 'mtrand.RandomState' objects}
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:142(_tolerance)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2470(var)
+    81    0.000    0.000    0.000    0.000 {method 'copy' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {method 'var' of 'numpy.ndarray' objects}
+    80    0.000    0.000    0.000    0.000 {method 'searchsorted' of 'numpy.ndarray' objects}
+    25    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+   346    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+    75    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:710(_check_fit_data)
+    32    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+    61    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:33(as_float_array)
+    10    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+    10    0.000    0.000    0.000    0.000 {method 'randint' of 'mtrand.RandomState' objects}
+     1    0.000    0.000    0.000    0.000 {hasattr}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: fit at line 738
+Total time: 0.162239 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   738                                               def fit(self, X, y=None):
+   739                                                   """Compute k-means"""
+   740
+   741         1           12     12.0      0.0          if not self.k is None:
+   742                                                       n_clusters = self.k
+   743                                                       warnings.warn("Parameter k was renamed to n_clusters",
+   744                                                               DeprecationWarning, stacklevel=2)
+   745                                                       self.n_clusters = n_clusters
+   746                                                   else:
+   747         1            5      5.0      0.0              n_clusters = self.n_clusters
+   748
+   749         1           13     13.0      0.0          self.random_state = check_random_state(self.random_state)
+   750         1          166    166.0      0.1          X = self._check_fit_data(X)
+   751
+   752         1            5      5.0      0.0          self.cluster_centers_, self.labels_, self.inertia_ = k_means(
+   753         1            5      5.0      0.0              X, n_clusters=n_clusters, init=self.init, n_init=self.n_init,
+   754         1            3      3.0      0.0              max_iter=self.max_iter, verbose=self.verbose,
+   755         1            4      4.0      0.0              precompute_distances=self.precompute_distances,
+   756         1            4      4.0      0.0              tol=self.tol, random_state=self.random_state, copy_x=self.copy_x,
+   757         1       162017 162017.0     99.9              n_jobs=self.n_jobs)
+   758         1            5      5.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="kmeans-blobs-predict-unsup">
+<h2>KMeans-blobs-predict_unsup<a class="headerlink" href="#kmeans-blobs-predict-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/KMeans-blobs-predict_unsup-timing.png" src="_images/KMeans-blobs-predict_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/KMeans-blobs-predict_unsup-memory.png" src="_images/KMeans-blobs-predict_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         147 function calls in 0.002 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.002    0.002 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.002    0.002 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:789(predict)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+     6    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     9    0.000    0.000    0.000    0.000 {method 'sum' of 'numpy.ndarray' objects}
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:718(_check_test_data)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+    22    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     6    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+    10    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+    12    0.000    0.000    0.000    0.000 {isinstance}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     3    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+    14    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:734(_check_fitted)
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     1    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 {hasattr}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: predict at line 789
+Total time: 0.001514 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   789                                               def predict(self, X):
+   790                                                   """Predict the closest cluster each sample in X belongs to.
+   791
+   792                                                   In the vector quantization literature, `cluster_centers_` is called
+   793                                                   the code book and each value returned by `predict` is the index of
+   794                                                   the closest code in the code book.
+   795
+   796                                                   Parameters
+   797                                                   ----------
+   798                                                   X: {array-like, sparse matrix}, shape = [n_samples, n_features]
+   799                                                       New data to predict.
+   800
+   801                                                   Returns
+   802                                                   -------
+   803                                                   Y : array, shape [n_samples,]
+   804                                                       Index of the closest center each sample belongs to.
+   805                                                   """
+   806         1           10     10.0      0.7          self._check_fitted()
+   807         1          137    137.0      9.0          X = self._check_test_data(X)
+   808         1          101    101.0      6.7          x_squared_norms = _squared_norms(X)
+   809         1         1266   1266.0     83.6          return _labels_inertia(X, x_squared_norms, self.cluster_centers_)[0]</pre>
+</div>
+</div>
+</div>
+<div class="section" id="minibatchkmeans-minimadelon-fit-unsup">
+<h2>MiniBatchKMeans-minimadelon-fit_unsup<a class="headerlink" href="#minibatchkmeans-minimadelon-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/MiniBatchKMeans-minimadelon-fit_unsup-timing.png" src="_images/MiniBatchKMeans-minimadelon-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/MiniBatchKMeans-minimadelon-fit_unsup-memory.png" src="_images/MiniBatchKMeans-minimadelon-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         8363 function calls in 0.285 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.285    0.285 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.285    0.285 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.072    0.072    0.285    0.285 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:1067(fit)
+    30    0.099    0.003    0.179    0.006 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:830(_mini_batch_step)
+    61    0.007    0.000    0.076    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+    34    0.001    0.000    0.068    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+    34    0.007    0.000    0.066    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+    61    0.001    0.000    0.036    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+    61    0.032    0.001    0.032    0.001 {numpy.core.multiarray.dot}
+  1030    0.029    0.000    0.029    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     3    0.000    0.000    0.027    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:525(_init_centroids)
+     3    0.006    0.002    0.027    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:36(_k_init)
+    61    0.001    0.000    0.026    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+   183    0.001    0.000    0.019    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+   305    0.004    0.000    0.016    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+   321    0.001    0.000    0.015    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+   122    0.001    0.000    0.011    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+   584    0.002    0.000    0.011    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+   584    0.006    0.000    0.009    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+   183    0.001    0.000    0.006    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+   183    0.002    0.000    0.004    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+  1168    0.002    0.000    0.002    0.000 {method 'split' of 'str' objects}
+   305    0.001    0.000    0.002    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+   917    0.002    0.000    0.002    0.000 {isinstance}
+   489    0.001    0.000    0.001    0.000 {numpy.core.multiarray.array}
+   183    0.001    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+    27    0.001    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:898(_mini_batch_convergence)
+   105    0.001    0.000    0.001    0.000 {numpy.core.multiarray.empty}
+    34    0.000    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+   672    0.000    0.000    0.000    0.000 {len}
+   102    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+    28    0.000    0.000    0.000    0.000 {method 'random_integers' of 'mtrand.RandomState' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+    24    0.000    0.000    0.000    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
+    24    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:757(searchsorted)
+   184    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+    24    0.000    0.000    0.000    0.000 {method 'random_sample' of 'mtrand.RandomState' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:91(check_arrays)
+    65    0.000    0.000    0.000    0.000 {range}
+    24    0.000    0.000    0.000    0.000 {method 'searchsorted' of 'numpy.ndarray' objects}
+   108    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+     7    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     9    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:84(_num_samples)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:289(ascontiguousarray)
+     5    0.000    0.000    0.000    0.000 {hasattr}
+     3    0.000    0.000    0.000    0.000 {method 'randint' of 'mtrand.RandomState' objects}
+     4    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: fit at line 1067
+Total time: 0.249992 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1067                                               def fit(self, X, y=None):
+  1068                                                   """Compute the centroids on X by chunking it into mini-batches.
+  1069
+  1070                                                   Parameters
+  1071                                                   ----------
+  1072                                                   X: array-like, shape = [n_samples, n_features]
+  1073                                                       Coordinates of the data points to cluster
+  1074                                                   """
+  1075         1           16     16.0      0.0          self.random_state = check_random_state(self.random_state)
+  1076         1            6      6.0      0.0          X = check_arrays(X, sparse_format="csr", copy=False,
+  1077         1          119    119.0      0.0                           check_ccontiguous=True, dtype=np.float64)[0]
+  1078         1            7      7.0      0.0          n_samples, n_features = X.shape
+  1079         1            6      6.0      0.0          if n_samples &lt; self.n_clusters:
+  1080                                                       raise ValueError("Number of samples smaller than number "\
+  1081                                                                        "of clusters.")
+  1082
+  1083         1            9      9.0      0.0          if hasattr(self.init, '__array__'):
+  1084                                                       self.init = np.ascontiguousarray(self.init, dtype=np.float64)
+  1085
+  1086         1          186    186.0      0.1          x_squared_norms = _squared_norms(X)
+  1087
+  1088         1            7      7.0      0.0          if self.tol &gt; 0.0:
+  1089                                                       tol = _tolerance(X, self.tol)
+  1090
+  1091                                                       # using tol-based early stopping needs the allocation of a
+  1092                                                       # dedicated before which can be expensive for high dim data:
+  1093                                                       # hence we allocate it outside of the main loop
+  1094                                                       old_center_buffer = np.zeros(n_features, np.double)
+  1095                                                   else:
+  1096         1            6      6.0      0.0              tol = 0.0
+  1097                                                       # no need for the center buffer if tol-based early stopping is
+  1098                                                       # disabled
+  1099         1           15     15.0      0.0              old_center_buffer = np.zeros(0, np.double)
+  1100
+  1101         1           13     13.0      0.0          distances = np.zeros(self.batch_size, dtype=np.float64)
+  1102         1           32     32.0      0.0          n_batches = int(np.ceil(float(n_samples) / self.batch_size))
+  1103         1            8      8.0      0.0          n_iterations = int(self.max_iter * n_batches)
+  1104
+  1105         1            6      6.0      0.0          init_size = self.init_size
+  1106         1            6      6.0      0.0          if init_size is None:
+  1107         1            6      6.0      0.0              init_size = 3 * self.batch_size
+  1108         1            6      6.0      0.0          if init_size &gt; n_samples:
+  1109         1            5      5.0      0.0              init_size = n_samples
+  1110         1            7      7.0      0.0          self.init_size_ = init_size
+  1111
+  1112         1            6      6.0      0.0          validation_indices = self.random_state.random_integers(
+  1113         1           18     18.0      0.0                  0, n_samples - 1, init_size)
+  1114         1          825    825.0      0.3          X_valid = X[validation_indices]
+  1115         1           14     14.0      0.0          x_squared_norms_valid = x_squared_norms[validation_indices]
+  1116
+  1117                                                   # perform several inits with random sub-sets
+  1118         1            5      5.0      0.0          best_inertia = None
+  1119         4           27      6.8      0.0          for init_idx in range(self.n_init):
+  1120         3           18      6.0      0.0              if self.verbose:
+  1121                                                           print "Init %d/%d with method: %s" % (
+  1122                                                               init_idx + 1, self.n_init, self.init)
+  1123         3           44     14.7      0.0              counts = np.zeros(self.n_clusters, dtype=np.int32)
+  1124
+  1125                                                       # TODO: once the `k_means` function works with sparse input we
+  1126                                                       # should refactor the following init to use it instead.
+  1127
+  1128                                                       # Initialize the centers using only a fraction of the data as we
+  1129                                                       # expect n_samples to be very large when using MiniBatchKMeans
+  1130         3           22      7.3      0.0              cluster_centers = _init_centroids(
+  1131         3           19      6.3      0.0                  X, self.n_clusters, self.init,
+  1132         3           17      5.7      0.0                  random_state=self.random_state,
+  1133         3           16      5.3      0.0                  x_squared_norms=x_squared_norms,
+  1134         3        28590   9530.0     11.4                  init_size=init_size)
+  1135
+  1136                                                       # Compute the label assignement on the init dataset
+  1137         3           23      7.7      0.0              batch_inertia, centers_squared_diff = _mini_batch_step(
+  1138         3           49     16.3      0.0                  X_valid, x_squared_norms[validation_indices],
+  1139         3           20      6.7      0.0                  cluster_centers, counts, old_center_buffer, False,
+  1140         3         9797   3265.7      3.9                  distances=distances)
+  1141
+  1142                                                       # Keep only the best cluster centers across independent inits on
+  1143                                                       # the common validation set
+  1144         3           23      7.7      0.0              _, inertia = _labels_inertia(X_valid, x_squared_norms_valid,
+  1145         3         3844   1281.3      1.5                                           cluster_centers)
+  1146         3           25      8.3      0.0              if self.verbose:
+  1147                                                           print "Inertia for init %d/%d: %f" % (
+  1148                                                               init_idx + 1, self.n_init, inertia)
+  1149         3           21      7.0      0.0              if best_inertia is None or inertia &lt; best_inertia:
+  1150         1            7      7.0      0.0                  self.cluster_centers_ = cluster_centers
+  1151         1            6      6.0      0.0                  self.counts_ = counts
+  1152         1            5      5.0      0.0                  best_inertia = inertia
+  1153
+  1154                                                   # Empty context to be used inplace by the convergence check routine
+  1155         1            6      6.0      0.0          convergence_context = {}
+  1156
+  1157                                                   # Perform the iterative optimization untill the final convergence
+  1158                                                   # criterion
+  1159        22          155      7.0      0.1          for iteration_idx in xrange(n_iterations):
+  1160
+  1161                                                       # Sample the minibatch from the full dataset
+  1162        22          161      7.3      0.1              minibatch_indices = self.random_state.random_integers(
+  1163        22          482     21.9      0.2                  0, n_samples - 1, self.batch_size)
+  1164
+  1165                                                       # Perform the actual update step on the minibatch data
+  1166        22          136      6.2      0.1              batch_inertia, centers_squared_diff = _mini_batch_step(
+  1167        22        59780   2717.3     23.9                  X[minibatch_indices], x_squared_norms[minibatch_indices],
+  1168        22          210      9.5      0.1                  self.cluster_centers_, self.counts_,
+  1169        22       141638   6438.1     56.7                  old_center_buffer, tol &gt; 0.0, distances=distances)
+  1170
+  1171                                                       # Monitor the convergence and do early stopping if necessary
+  1172        22          215      9.8      0.1              if _mini_batch_convergence(
+  1173        22          144      6.5      0.1                  self, iteration_idx, n_iterations, tol, n_samples,
+  1174        22          132      6.0      0.1                  centers_squared_diff, batch_inertia, convergence_context,
+  1175        22         1662     75.5      0.7                  verbose=self.verbose):
+  1176         1            7      7.0      0.0                  break
+  1177
+  1178         1            6      6.0      0.0          if self.compute_labels:
+  1179         1            6      6.0      0.0              if self.verbose:
+  1180                                                           print 'Computing label assignements and total inertia'
+  1181         1            6      6.0      0.0              self.labels_, self.inertia_ = _labels_inertia(
+  1182         1         1332   1332.0      0.5                  X, x_squared_norms, self.cluster_centers_)
+  1183
+  1184         1            7      7.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="minibatchkmeans-minimadelon-predict-unsup">
+<h2>MiniBatchKMeans-minimadelon-predict_unsup<a class="headerlink" href="#minibatchkmeans-minimadelon-predict-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/MiniBatchKMeans-minimadelon-predict_unsup-timing.png" src="_images/MiniBatchKMeans-minimadelon-predict_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/MiniBatchKMeans-minimadelon-predict_unsup-memory.png" src="_images/MiniBatchKMeans-minimadelon-predict_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         147 function calls in 0.001 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.001    0.001 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:789(predict)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+     6    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     9    0.000    0.000    0.000    0.000 {method 'sum' of 'numpy.ndarray' objects}
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:718(_check_test_data)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+    22    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     6    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+    10    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+    12    0.000    0.000    0.000    0.000 {isinstance}
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     3    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+    14    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:734(_check_fitted)
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     1    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 {hasattr}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: predict at line 789
+Total time: 0.001432 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   789                                               def predict(self, X):
+   790                                                   """Predict the closest cluster each sample in X belongs to.
+   791
+   792                                                   In the vector quantization literature, `cluster_centers_` is called
+   793                                                   the code book and each value returned by `predict` is the index of
+   794                                                   the closest code in the code book.
+   795
+   796                                                   Parameters
+   797                                                   ----------
+   798                                                   X: {array-like, sparse matrix}, shape = [n_samples, n_features]
+   799                                                       New data to predict.
+   800
+   801                                                   Returns
+   802                                                   -------
+   803                                                   Y : array, shape [n_samples,]
+   804                                                       Index of the closest center each sample belongs to.
+   805                                                   """
+   806         1           11     11.0      0.8          self._check_fitted()
+   807         1          141    141.0      9.8          X = self._check_test_data(X)
+   808         1          104    104.0      7.3          x_squared_norms = _squared_norms(X)
+   809         1         1176   1176.0     82.1          return _labels_inertia(X, x_squared_norms, self.cluster_centers_)[0]</pre>
+</div>
+</div>
+</div>
+<div class="section" id="minibatchkmeans-madelon-fit-unsup">
+<h2>MiniBatchKMeans-madelon-fit_unsup<a class="headerlink" href="#minibatchkmeans-madelon-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;madelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/MiniBatchKMeans-madelon-fit_unsup-timing.png" src="_images/MiniBatchKMeans-madelon-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/MiniBatchKMeans-madelon-fit_unsup-memory.png" src="_images/MiniBatchKMeans-madelon-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         13938 function calls in 0.796 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.796    0.796 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.796    0.796 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.186    0.186    0.796    0.796 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:1067(fit)
+    64    0.243    0.004    0.435    0.007 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:830(_mini_batch_step)
+    95    0.014    0.000    0.248    0.003 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+    68    0.003    0.000    0.197    0.003 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+    68    0.017    0.000    0.191    0.003 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+    95    0.002    0.000    0.145    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+    95    0.140    0.001    0.140    0.001 {numpy.core.multiarray.dot}
+     3    0.028    0.009    0.115    0.038 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:525(_init_centroids)
+  1890    0.089    0.000    0.089    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     3    0.007    0.002    0.086    0.029 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:36(_k_init)
+    95    0.002    0.000    0.074    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+   475    0.007    0.000    0.057    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+   285    0.002    0.000    0.047    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+   190    0.001    0.000    0.035    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+   671    0.003    0.000    0.033    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+   924    0.003    0.000    0.020    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+   924    0.011    0.000    0.017    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+     1    0.010    0.010    0.013    0.013 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+   285    0.002    0.000    0.010    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+   285    0.004    0.000    0.007    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+  1848    0.004    0.000    0.004    0.000 {method 'split' of 'str' objects}
+  1607    0.003    0.000    0.003    0.000 {isinstance}
+   475    0.002    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+   761    0.003    0.000    0.003    0.000 {numpy.core.multiarray.array}
+    61    0.002    0.000    0.002    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:898(_mini_batch_convergence)
+   285    0.001    0.000    0.002    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+    68    0.000    0.000    0.002    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+   207    0.002    0.000    0.002    0.000 {numpy.core.multiarray.empty}
+    65    0.001    0.000    0.001    0.000 {method 'random_integers' of 'mtrand.RandomState' objects}
+   204    0.001    0.000    0.001    0.000 {method 'fill' of 'numpy.ndarray' objects}
+  1046    0.001    0.000    0.001    0.000 {len}
+    24    0.000    0.000    0.000    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
+   286    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+    24    0.000    0.000    0.000    0.000 {method 'random_sample' of 'mtrand.RandomState' objects}
+   133    0.000    0.000    0.000    0.000 {range}
+    24    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:757(searchsorted)
+   244    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:91(check_arrays)
+    24    0.000    0.000    0.000    0.000 {method 'searchsorted' of 'numpy.ndarray' objects}
+     7    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     9    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:289(ascontiguousarray)
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:84(_num_samples)
+     5    0.000    0.000    0.000    0.000 {hasattr}
+     3    0.000    0.000    0.000    0.000 {method 'randint' of 'mtrand.RandomState' objects}
+     4    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: fit at line 1067
+Total time: 0.600725 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1067                                               def fit(self, X, y=None):
+  1068                                                   """Compute the centroids on X by chunking it into mini-batches.
+  1069
+  1070                                                   Parameters
+  1071                                                   ----------
+  1072                                                   X: array-like, shape = [n_samples, n_features]
+  1073                                                       Coordinates of the data points to cluster
+  1074                                                   """
+  1075         1           16     16.0      0.0          self.random_state = check_random_state(self.random_state)
+  1076         1            7      7.0      0.0          X = check_arrays(X, sparse_format="csr", copy=False,
+  1077         1          101    101.0      0.0                           check_ccontiguous=True, dtype=np.float64)[0]
+  1078         1            7      7.0      0.0          n_samples, n_features = X.shape
+  1079         1            6      6.0      0.0          if n_samples &lt; self.n_clusters:
+  1080                                                       raise ValueError("Number of samples smaller than number "\
+  1081                                                                        "of clusters.")
+  1082
+  1083         1            9      9.0      0.0          if hasattr(self.init, '__array__'):
+  1084                                                       self.init = np.ascontiguousarray(self.init, dtype=np.float64)
+  1085
+  1086         1        12565  12565.0      2.1          x_squared_norms = _squared_norms(X)
+  1087
+  1088         1           11     11.0      0.0          if self.tol &gt; 0.0:
+  1089                                                       tol = _tolerance(X, self.tol)
+  1090
+  1091                                                       # using tol-based early stopping needs the allocation of a
+  1092                                                       # dedicated before which can be expensive for high dim data:
+  1093                                                       # hence we allocate it outside of the main loop
+  1094                                                       old_center_buffer = np.zeros(n_features, np.double)
+  1095                                                   else:
+  1096         1            6      6.0      0.0              tol = 0.0
+  1097                                                       # no need for the center buffer if tol-based early stopping is
+  1098                                                       # disabled
+  1099         1           33     33.0      0.0              old_center_buffer = np.zeros(0, np.double)
+  1100
+  1101         1           18     18.0      0.0          distances = np.zeros(self.batch_size, dtype=np.float64)
+  1102         1           37     37.0      0.0          n_batches = int(np.ceil(float(n_samples) / self.batch_size))
+  1103         1            8      8.0      0.0          n_iterations = int(self.max_iter * n_batches)
+  1104
+  1105         1            7      7.0      0.0          init_size = self.init_size
+  1106         1            6      6.0      0.0          if init_size is None:
+  1107         1            6      6.0      0.0              init_size = 3 * self.batch_size
+  1108         1            5      5.0      0.0          if init_size &gt; n_samples:
+  1109                                                       init_size = n_samples
+  1110         1            9      9.0      0.0          self.init_size_ = init_size
+  1111
+  1112         1            7      7.0      0.0          validation_indices = self.random_state.random_integers(
+  1113         1           28     28.0      0.0                  0, n_samples - 1, init_size)
+  1114         1         9170   9170.0      1.5          X_valid = X[validation_indices]
+  1115         1           40     40.0      0.0          x_squared_norms_valid = x_squared_norms[validation_indices]
+  1116
+  1117                                                   # perform several inits with random sub-sets
+  1118         1            6      6.0      0.0          best_inertia = None
+  1119         4           39      9.8      0.0          for init_idx in range(self.n_init):
+  1120         3           19      6.3      0.0              if self.verbose:
+  1121                                                           print "Init %d/%d with method: %s" % (
+  1122                                                               init_idx + 1, self.n_init, self.init)
+  1123         3           61     20.3      0.0              counts = np.zeros(self.n_clusters, dtype=np.int32)
+  1124
+  1125                                                       # TODO: once the `k_means` function works with sparse input we
+  1126                                                       # should refactor the following init to use it instead.
+  1127
+  1128                                                       # Initialize the centers using only a fraction of the data as we
+  1129                                                       # expect n_samples to be very large when using MiniBatchKMeans
+  1130         3           18      6.0      0.0              cluster_centers = _init_centroids(
+  1131         3           19      6.3      0.0                  X, self.n_clusters, self.init,
+  1132         3           17      5.7      0.0                  random_state=self.random_state,
+  1133         3           17      5.7      0.0                  x_squared_norms=x_squared_norms,
+  1134         3       112949  37649.7     18.8                  init_size=init_size)
+  1135
+  1136                                                       # Compute the label assignement on the init dataset
+  1137         3           33     11.0      0.0              batch_inertia, centers_squared_diff = _mini_batch_step(
+  1138         3           84     28.0      0.0                  X_valid, x_squared_norms[validation_indices],
+  1139         3           22      7.3      0.0                  cluster_centers, counts, old_center_buffer, False,
+  1140         3        45563  15187.7      7.6                  distances=distances)
+  1141
+  1142                                                       # Keep only the best cluster centers across independent inits on
+  1143                                                       # the common validation set
+  1144         3           30     10.0      0.0              _, inertia = _labels_inertia(X_valid, x_squared_norms_valid,
+  1145         3        15761   5253.7      2.6                                           cluster_centers)
+  1146         3           32     10.7      0.0              if self.verbose:
+  1147                                                           print "Inertia for init %d/%d: %f" % (
+  1148                                                               init_idx + 1, self.n_init, inertia)
+  1149         3           24      8.0      0.0              if best_inertia is None or inertia &lt; best_inertia:
+  1150         2           16      8.0      0.0                  self.cluster_centers_ = cluster_centers
+  1151         2           14      7.0      0.0                  self.counts_ = counts
+  1152         2           12      6.0      0.0                  best_inertia = inertia
+  1153
+  1154                                                   # Empty context to be used inplace by the convergence check routine
+  1155         1            6      6.0      0.0          convergence_context = {}
+  1156
+  1157                                                   # Perform the iterative optimization untill the final convergence
+  1158                                                   # criterion
+  1159        40          281      7.0      0.0          for iteration_idx in xrange(n_iterations):
+  1160
+  1161                                                       # Sample the minibatch from the full dataset
+  1162        40          303      7.6      0.1              minibatch_indices = self.random_state.random_integers(
+  1163        40          930     23.2      0.2                  0, n_samples - 1, self.batch_size)
+  1164
+  1165                                                       # Perform the actual update step on the minibatch data
+  1166        40          255      6.4      0.0              batch_inertia, centers_squared_diff = _mini_batch_step(
+  1167        40       109086   2727.2     18.2                  X[minibatch_indices], x_squared_norms[minibatch_indices],
+  1168        40          434     10.8      0.1                  self.cluster_centers_, self.counts_,
+  1169        40       259833   6495.8     43.3                  old_center_buffer, tol &gt; 0.0, distances=distances)
+  1170
+  1171                                                       # Monitor the convergence and do early stopping if necessary
+  1172        40          379      9.5      0.1              if _mini_batch_convergence(
+  1173        40          249      6.2      0.0                  self, iteration_idx, n_iterations, tol, n_samples,
+  1174        40          235      5.9      0.0                  centers_squared_diff, batch_inertia, convergence_context,
+  1175        40         3086     77.2      0.5                  verbose=self.verbose):
+  1176         1            7      7.0      0.0                  break
+  1177
+  1178         1            6      6.0      0.0          if self.compute_labels:
+  1179         1            6      6.0      0.0              if self.verbose:
+  1180                                                           print 'Computing label assignements and total inertia'
+  1181         1            6      6.0      0.0              self.labels_, self.inertia_ = _labels_inertia(
+  1182         1        28777  28777.0      4.8                  X, x_squared_norms, self.cluster_centers_)
+  1183
+  1184         1            8      8.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="minibatchkmeans-madelon-predict-unsup">
+<h2>MiniBatchKMeans-madelon-predict_unsup<a class="headerlink" href="#minibatchkmeans-madelon-predict-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MiniBatchKMeans</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;madelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">MiniBatchKMeans</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/MiniBatchKMeans-madelon-predict_unsup-timing.png" src="_images/MiniBatchKMeans-madelon-predict_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/MiniBatchKMeans-madelon-predict_unsup-memory.png" src="_images/MiniBatchKMeans-madelon-predict_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         147 function calls in 0.015 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.015    0.015 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.015    0.015 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.015    0.015 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:789(predict)
+     1    0.000    0.000    0.010    0.010 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:431(_labels_inertia)
+     1    0.000    0.000    0.009    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:414(_labels_inertia_precompute_dense)
+     1    0.000    0.000    0.009    0.009 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+     1    0.000    0.000    0.007    0.007 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+     1    0.007    0.007    0.007    0.007 {numpy.core.multiarray.dot}
+     1    0.003    0.003    0.004    0.004 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:404(_squared_norms)
+     9    0.003    0.000    0.003    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     6    0.000    0.000    0.002    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+     4    0.000    0.000    0.002    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+     1    0.000    0.000    0.002    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:718(_check_test_data)
+     2    0.000    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+    11    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+    22    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+    10    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     6    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+    12    0.000    0.000    0.000    0.000 {isinstance}
+     3    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+    14    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py:734(_check_fitted)
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     4    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     1    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 {hasattr}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/k_means_.py
+Function: predict at line 789
+Total time: 0.01428 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   789                                               def predict(self, X):
+   790                                                   """Predict the closest cluster each sample in X belongs to.
+   791
+   792                                                   In the vector quantization literature, `cluster_centers_` is called
+   793                                                   the code book and each value returned by `predict` is the index of
+   794                                                   the closest code in the code book.
+   795
+   796                                                   Parameters
+   797                                                   ----------
+   798                                                   X: {array-like, sparse matrix}, shape = [n_samples, n_features]
+   799                                                       New data to predict.
+   800
+   801                                                   Returns
+   802                                                   -------
+   803                                                   Y : array, shape [n_samples,]
+   804                                                       Index of the closest center each sample belongs to.
+   805                                                   """
+   806         1           12     12.0      0.1          self._check_fitted()
+   807         1          914    914.0      6.4          X = self._check_test_data(X)
+   808         1         3959   3959.0     27.7          x_squared_norms = _squared_norms(X)
+   809         1         9395   9395.0     65.8          return _labels_inertia(X, x_squared_norms, self.cluster_centers_)[0]</pre>
+</div>
+</div>
+</div>
+<div class="section" id="spectralclustering-minimadelon-fit-unsup">
+<h2>SpectralClustering-minimadelon-fit_unsup<a class="headerlink" href="#spectralclustering-minimadelon-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">SpectralClustering</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SpectralClustering</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/SpectralClustering-minimadelon-fit_unsup-timing.png" src="_images/SpectralClustering-minimadelon-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/SpectralClustering-minimadelon-fit_unsup-memory.png" src="_images/SpectralClustering-minimadelon-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+</div>
+<div class="section" id="spectralclustering-minimadelon-predict-unsup">
+<h2>SpectralClustering-minimadelon-predict_unsup<a class="headerlink" href="#spectralclustering-minimadelon-predict-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">SpectralClustering</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SpectralClustering</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/SpectralClustering-minimadelon-predict_unsup-timing.png" src="_images/SpectralClustering-minimadelon-predict_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/SpectralClustering-minimadelon-predict_unsup-memory.png" src="_images/SpectralClustering-minimadelon-predict_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+</div>
+<div class="section" id="spectralclustering-blobs-fit-unsup">
+<h2>SpectralClustering-blobs-fit_unsup<a class="headerlink" href="#spectralclustering-blobs-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">SpectralClustering</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SpectralClustering</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/SpectralClustering-blobs-fit_unsup-timing.png" src="_images/SpectralClustering-blobs-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/SpectralClustering-blobs-fit_unsup-memory.png" src="_images/SpectralClustering-blobs-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+</div>
+<div class="section" id="spectralclustering-blobs-predict-unsup">
+<h2>SpectralClustering-blobs-predict_unsup<a class="headerlink" href="#spectralclustering-blobs-predict-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">SpectralClustering</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;n_clusters&#39;</span><span class="p">:</span> <span class="mi">9</span><span class="p">}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">SpectralClustering</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_t</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/SpectralClustering-blobs-predict_unsup-timing.png" src="_images/SpectralClustering-blobs-predict_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/SpectralClustering-blobs-predict_unsup-memory.png" src="_images/SpectralClustering-blobs-predict_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+</div>
+<div class="section" id="ward-minimadelon-fit-unsup">
+<h2>Ward-minimadelon-fit_unsup<a class="headerlink" href="#ward-minimadelon-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">Ward</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">Ward</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/Ward-minimadelon-fit_unsup-timing.png" src="_images/Ward-minimadelon-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/Ward-minimadelon-fit_unsup-memory.png" src="_images/Ward-minimadelon-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         52 function calls in 0.002 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.002    0.002 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.002    0.002 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.002    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py:299(fit)
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py:29(ward_tree)
+     1    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/scipy/cluster/hierarchy.py:423(ward)
+     1    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/scipy/cluster/hierarchy.py:464(linkage)
+     1    0.000    0.000    0.001    0.001 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:916(pdist)
+     1    0.000    0.000    0.000    0.000 {scipy.spatial._distance_wrap.pdist_euclidean_wrap}
+     1    0.000    0.000    0.000    0.000 {scipy.cluster._hierarchy_wrap.linkage_euclid_wrap}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py:205(_hc_cut)
+     2    0.000    0.000    0.000    0.000 {sklearn.cluster._hierarchical._hc_get_descendent}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:132(_copy_arrays_if_base_present)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:120(_copy_array_if_base_present)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numerictypes.py:703(issubsctype)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numerictypes.py:608(obj2sctype)
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/cluster/hierarchy.py:912(_convert_to_double)
+     1    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {max}
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     6    0.000    0.000    0.000    0.000 {isinstance}
+     3    0.000    0.000    0.000    0.000 {issubclass}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:151(_convert_to_double)
+     1    0.000    0.000    0.000    0.000 {_heapq.heappush}
+     2    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+     3    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/externals/joblib/memory.py:490(cache)
+     1    0.000    0.000    0.000    0.000 {_heapq.heappushpop}
+     1    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+     1    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py
+Function: fit at line 299
+Total time: 0.001613 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   299                                               def fit(self, X):
+   300                                                   """Fit the hierarchical clustering on the data
+   301
+   302                                                   Parameters
+   303                                                   ----------
+   304                                                   X : array-like, shape = [n_samples, n_features]
+   305                                                       The samples a.k.a. observations.
+   306
+   307                                                   Returns
+   308                                                   -------
+   309                                                   self
+   310                                                   """
+   311         1            6      6.0      0.4          memory = self.memory
+   312         1            7      7.0      0.4          if isinstance(memory, basestring):
+   313                                                       memory = Memory(cachedir=memory)
+   314
+   315         1            4      4.0      0.2          if not self.connectivity is None:
+   316                                                       if not sparse.issparse(self.connectivity):
+   317                                                           raise TypeError("`connectivity` should be a sparse matrix or "
+   318                                                                   "None, got: %r" % type(self.connectivity))
+   319
+   320                                                       if (self.connectivity.shape[0] != X.shape[0] or
+   321                                                               self.connectivity.shape[1] != X.shape[0]):
+   322                                                           raise ValueError("`connectivity` does not have shape "
+   323                                                                   "(n_samples, n_samples)")
+   324
+   325                                                   # Construct the tree
+   326                                                   self.children_, self.n_components, self.n_leaves_ = \
+   327         1           20     20.0      1.2                  memory.cache(ward_tree)(X, self.connectivity,
+   328         1         1263   1263.0     78.3                                  n_components=self.n_components, copy=self.copy)
+   329
+   330                                                   # Cut the tree
+   331         1          309    309.0     19.2          self.labels_ = _hc_cut(self.n_clusters, self.children_, self.n_leaves_)
+   332         1            4      4.0      0.2          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="ward-blobs-fit-unsup">
+<h2>Ward-blobs-fit_unsup<a class="headerlink" href="#ward-blobs-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">Ward</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">Ward</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/Ward-blobs-fit_unsup-timing.png" src="_images/Ward-blobs-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/Ward-blobs-fit_unsup-memory.png" src="_images/Ward-blobs-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         52 function calls in 0.054 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.054    0.054 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.054    0.054 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.054    0.054 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py:299(fit)
+     1    0.000    0.000    0.053    0.053 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py:29(ward_tree)
+     1    0.000    0.000    0.053    0.053 /home/nivlad/.local/lib/python2.7/site-packages/scipy/cluster/hierarchy.py:423(ward)
+     1    0.000    0.000    0.053    0.053 /home/nivlad/.local/lib/python2.7/site-packages/scipy/cluster/hierarchy.py:464(linkage)
+     1    0.046    0.046    0.046    0.046 {scipy.cluster._hierarchy_wrap.linkage_euclid_wrap}
+     1    0.000    0.000    0.006    0.006 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:916(pdist)
+     1    0.006    0.006    0.006    0.006 {scipy.spatial._distance_wrap.pdist_euclidean_wrap}
+     1    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py:205(_hc_cut)
+     2    0.001    0.000    0.001    0.000 {sklearn.cluster._hierarchical._hc_get_descendent}
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:132(_copy_arrays_if_base_present)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:120(_copy_array_if_base_present)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numerictypes.py:703(issubsctype)
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numerictypes.py:608(obj2sctype)
+     1    0.000    0.000    0.000    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     3    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/cluster/hierarchy.py:912(_convert_to_double)
+     1    0.000    0.000    0.000    0.000 {max}
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.array}
+     6    0.000    0.000    0.000    0.000 {isinstance}
+     3    0.000    0.000    0.000    0.000 {issubclass}
+     2    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+     2    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/spatial/distance.py:151(_convert_to_double)
+     1    0.000    0.000    0.000    0.000 {_heapq.heappush}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/externals/joblib/memory.py:490(cache)
+     1    0.000    0.000    0.000    0.000 {_heapq.heappushpop}
+     3    0.000    0.000    0.000    0.000 {len}
+     1    0.000    0.000    0.000    0.000 {range}
+     1    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+     1    0.000    0.000    0.000    0.000 {callable}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/hierarchical.py
+Function: fit at line 299
+Total time: 0.05206 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   299                                               def fit(self, X):
+   300                                                   """Fit the hierarchical clustering on the data
+   301
+   302                                                   Parameters
+   303                                                   ----------
+   304                                                   X : array-like, shape = [n_samples, n_features]
+   305                                                       The samples a.k.a. observations.
+   306
+   307                                                   Returns
+   308                                                   -------
+   309                                                   self
+   310                                                   """
+   311         1            7      7.0      0.0          memory = self.memory
+   312         1            7      7.0      0.0          if isinstance(memory, basestring):
+   313                                                       memory = Memory(cachedir=memory)
+   314
+   315         1            4      4.0      0.0          if not self.connectivity is None:
+   316                                                       if not sparse.issparse(self.connectivity):
+   317                                                           raise TypeError("`connectivity` should be a sparse matrix or "
+   318                                                                   "None, got: %r" % type(self.connectivity))
+   319
+   320                                                       if (self.connectivity.shape[0] != X.shape[0] or
+   321                                                               self.connectivity.shape[1] != X.shape[0]):
+   322                                                           raise ValueError("`connectivity` does not have shape "
+   323                                                                   "(n_samples, n_samples)")
+   324
+   325                                                   # Construct the tree
+   326                                                   self.children_, self.n_components, self.n_leaves_ = \
+   327         1           13     13.0      0.0                  memory.cache(ward_tree)(X, self.connectivity,
+   328         1        50748  50748.0     97.5                                  n_components=self.n_components, copy=self.copy)
+   329
+   330                                                   # Cut the tree
+   331         1         1277   1277.0      2.5          self.labels_ = _hc_cut(self.n_clusters, self.children_, self.n_leaves_)
+   332         1            4      4.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="meanshift-minimadelon-fit-unsup">
+<h2>MeanShift-minimadelon-fit_unsup<a class="headerlink" href="#meanshift-minimadelon-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MeanShift</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;minimadelon&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">MeanShift</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/MeanShift-minimadelon-fit_unsup-timing.png" src="_images/MeanShift-minimadelon-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/MeanShift-minimadelon-fit_unsup-memory.png" src="_images/MeanShift-minimadelon-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         6730 function calls in 0.143 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    0.143    0.143 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    0.143    0.143 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    0.143    0.143 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:265(fit)
+     1    0.072    0.072    0.142    0.142 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:51(mean_shift)
+   114    0.001    0.000    0.051    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:334(radius_neighbors)
+   124    0.001    0.000    0.030    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+   236    0.001    0.000    0.026    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+   236    0.002    0.000    0.024    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+   823    0.023    0.000    0.023    0.000 {numpy.core.multiarray.array}
+   347    0.001    0.000    0.022    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+   111    0.011    0.000    0.019    0.000 {method 'query_radius' of 'sklearn.neighbors.ball_tree.BallTree' objects}
+   112    0.000    0.000    0.009    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+   112    0.009    0.000    0.009    0.000 {method 'mean' of 'numpy.ndarray' objects}
+   111    0.002    0.000    0.006    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:15(norm)
+   136    0.002    0.000    0.004    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+   111    0.003    0.000    0.004    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/blas.py:30(get_blas_funcs)
+   156    0.000    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+   475    0.001    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+   156    0.002    0.000    0.003    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+     2    0.000    0.000    0.002    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:156(kneighbors)
+   111    0.001    0.000    0.002    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:6(atleast_1d)
+     4    0.000    0.000    0.002    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:404(pairwise_distances)
+     4    0.000    0.000    0.002    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+     1    0.000    0.000    0.002    0.002 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:16(estimate_bandwidth)
+   144    0.002    0.000    0.002    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     1    0.001    0.001    0.001    0.001 {method 'query' of 'sklearn.neighbors.ball_tree.BallTree' objects}
+   112    0.001    0.000    0.001    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+     4    0.000    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     4    0.000    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:576(fit)
+     4    0.000    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:96(_fit)
+    12    0.000    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+  1080    0.001    0.000    0.001    0.000 {len}
+   312    0.001    0.000    0.001    0.000 {method 'split' of 'str' objects}
+   111    0.001    0.000    0.001    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+   288    0.001    0.000    0.001    0.000 {isinstance}
+   458    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+   112    0.000    0.000    0.000    0.000 {numpy.core.multiarray.empty}
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+   112    0.000    0.000    0.000    0.000 {method 'fill' of 'numpy.ndarray' objects}
+   111    0.000    0.000    0.000    0.000 {getattr}
+   222    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+     8    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     4    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+   111    0.000    0.000    0.000    0.000 {max}
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/unsupervised.py:85(__init__)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1774(amax)
+     1    0.000    0.000    0.000    0.000 {method 'max' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:77(_init_params)
+     1    0.000    0.000    0.000    0.000 {sorted}
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1508(any)
+     1    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {method 'argsort' of 'numpy.ndarray' objects}
+     3    0.000    0.000    0.000    0.000 {numpy.core.multiarray.where}
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.arange}
+     1    0.000    0.000    0.000    0.000 {method 'flatten' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     6    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:134(&lt;lambda&gt;)
+     1    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py
+Function: fit at line 265
+Total time: 0.148369 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   265                                               def fit(self, X):
+   266                                                   """ Compute MeanShift
+   267
+   268                                                   Parameters
+   269                                                   -----------
+   270                                                   X : array [n_samples, n_features]
+   271                                                       Input points
+   272                                                   """
+   273                                                   self.cluster_centers_, self.labels_ = \
+   274         1            6      6.0      0.0                                 mean_shift(X,
+   275         1            3      3.0      0.0                                            bandwidth=self.bandwidth,
+   276         1            3      3.0      0.0                                            seeds=self.seeds,
+   277         1            3      3.0      0.0                                            bin_seeding=self.bin_seeding,
+   278         1       148348 148348.0    100.0                                            cluster_all=self.cluster_all)
+   279         1            6      6.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+<div class="section" id="meanshift-blobs-fit-unsup">
+<h2>MeanShift-blobs-fit_unsup<a class="headerlink" href="#meanshift-blobs-fit-unsup" title="Permalink to this headline">¶</a></h2>
+<p><strong>Benchmark setup</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">MeanShift</span>
+<span class="kn">from</span> <span class="nn">deps</span> <span class="kn">import</span> <span class="n">load_data</span>
+
+<span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">X_t</span><span class="p">,</span> <span class="n">y_t</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s">&#39;blobs&#39;</span><span class="p">)</span>
+<span class="n">obj</span> <span class="o">=</span> <span class="n">MeanShift</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Benchmark statement</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">obj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Execution time</strong></p>
+<img alt="_images/MeanShift-blobs-fit_unsup-timing.png" src="_images/MeanShift-blobs-fit_unsup-timing.png" style="width: 6in;" />
+<p><strong>Memory usage</strong></p>
+<img alt="_images/MeanShift-blobs-fit_unsup-memory.png" src="_images/MeanShift-blobs-fit_unsup-memory.png" style="width: 6in;" />
+<p><strong>Additional output</strong></p>
+<div class="profiler-output container">
+<p>cProfile</p>
+<div class="highlight-python"><pre>         62265 function calls in 1.252 seconds
+
+Ordered by: cumulative time
+
+ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     1    0.000    0.000    1.252    1.252 /hardmnt/goblin1/home/nivlad/balls/vbench/vbench/benchmark.py:257(f)
+     1    0.000    0.000    1.252    1.252 &lt;f&gt;:1(&lt;module&gt;)
+     1    0.000    0.000    1.252    1.252 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:265(fit)
+     1    0.771    0.771    1.252    1.252 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:51(mean_shift)
+  1121    0.009    0.000    0.326    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:334(radius_neighbors)
+  1120    0.114    0.000    0.189    0.000 {method 'query_radius' of 'sklearn.neighbors.ball_tree.BallTree' objects}
+  1127    0.008    0.000    0.128    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:67(atleast2d_or_csr)
+  2248    0.012    0.000    0.102    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:62(array2d)
+  2248    0.021    0.000    0.078    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:58(atleast_2d)
+  1121    0.004    0.000    0.063    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:2299(mean)
+  7868    0.061    0.000    0.061    0.000 {numpy.core.multiarray.array}
+  1121    0.059    0.000    0.059    0.000 {method 'mean' of 'numpy.ndarray' objects}
+  3368    0.010    0.000    0.057    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:237(asanyarray)
+  1120    0.013    0.000    0.055    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:15(norm)
+  1120    0.027    0.000    0.036    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/linalg/blas.py:30(get_blas_funcs)
+     1    0.000    0.000    0.034    0.034 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:16(estimate_bandwidth)
+     2    0.000    0.000    0.033    0.016 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:156(kneighbors)
+     1    0.032    0.032    0.032    0.032 {method 'query' of 'sklearn.neighbors.ball_tree.BallTree' objects}
+  1135    0.014    0.000    0.026    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:10(assert_all_finite)
+  4499    0.012    0.000    0.025    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:167(asarray)
+  1120    0.010    0.000    0.024    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/shape_base.py:6(atleast_1d)
+  1147    0.004    0.000    0.024    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/base.py:553(isspmatrix)
+  1147    0.014    0.000    0.020    0.000 /home/nivlad/.local/lib/python2.7/site-packages/scipy/sparse/sputils.py:116(_isinstance)
+  1121    0.005    0.000    0.012    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/numeric.py:1791(ones)
+  1139    0.012    0.000    0.012    0.000 {method 'sum' of 'numpy.ndarray' objects}
+ 10409    0.007    0.000    0.007    0.000 {len}
+  1120    0.006    0.000    0.006    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+  2294    0.005    0.000    0.005    0.000 {method 'split' of 'str' objects}
+  2284    0.004    0.000    0.004    0.000 {isinstance}
+  1121    0.004    0.000    0.004    0.000 {numpy.core.multiarray.empty}
+  4488    0.004    0.000    0.004    0.000 {method 'append' of 'list' objects}
+  1121    0.004    0.000    0.004    0.000 {method 'fill' of 'numpy.ndarray' objects}
+     4    0.000    0.000    0.003    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:576(fit)
+     4    0.002    0.000    0.003    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:96(_fit)
+  2240    0.002    0.000    0.002    0.000 {method 'get' of 'dict' objects}
+  1120    0.002    0.000    0.002    0.000 {getattr}
+  1120    0.002    0.000    0.002    0.000 {max}
+     2    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:404(pairwise_distances)
+     2    0.000    0.000    0.001    0.001 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:101(euclidean_distances)
+     8    0.000    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:23(safe_asarray)
+     2    0.000    0.000    0.001    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/metrics/pairwise.py:52(check_pairwise_arrays)
+     1    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1774(amax)
+     1    0.000    0.000    0.000    0.000 {method 'max' of 'numpy.ndarray' objects}
+     2    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/extmath.py:70(safe_sparse_dot)
+     2    0.000    0.000    0.000    0.000 {numpy.core.multiarray.dot}
+     4    0.000    0.000    0.000    0.000 /home/nivlad/.local/lib/python2.7/site-packages/numpy/core/fromnumeric.py:1379(sum)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/unsupervised.py:85(__init__)
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/utils/validation.py:173(check_random_state)
+     4    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/neighbors/base.py:77(_init_params)
+     1    0.000    0.000    0.000    0.000 {method 'argsort' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {sorted}
+     1    0.000    0.000    0.000    0.000 {method 'flatten' of 'numpy.ndarray' objects}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.arange}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.zeros}
+     1    0.000    0.000    0.000    0.000 {numpy.core.multiarray.where}
+     1    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+     1    0.000    0.000    0.000    0.000 /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py:134(&lt;lambda&gt;)
+     1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+.. container::</pre>
+</div>
+<p>LineProfiler</p>
+<div class="highlight-python"><pre>   Timer unit: 1e-06 s
+
+File: /hardmnt/goblin1/home/nivlad/balls/scikit-learn/sklearn/cluster/mean_shift_.py
+Function: fit at line 265
+Total time: 1.30946 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   265                                               def fit(self, X):
+   266                                                   """ Compute MeanShift
+   267
+   268                                                   Parameters
+   269                                                   -----------
+   270                                                   X : array [n_samples, n_features]
+   271                                                       Input points
+   272                                                   """
+   273                                                   self.cluster_centers_, self.labels_ = \
+   274         1            6      6.0      0.0                                 mean_shift(X,
+   275         1            3      3.0      0.0                                            bandwidth=self.bandwidth,
+   276         1            3      3.0      0.0                                            seeds=self.seeds,
+   277         1            3      3.0      0.0                                            bin_seeding=self.bin_seeding,
+   278         1      1309441 1309441.0    100.0                                            cluster_all=self.cluster_all)
+   279         1            5      5.0      0.0          return self</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+
+        <div class="clearer"></div>
+      </div>
+    </div>
+  
+
+    <div class="footer">
+        &copy; .
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3. Design by <a href="http://desgrana.es">Desgrana</a>.
+    <span style="padding-left: 5ex;">
+    <a href="_sources/vb_cluster.txt"
+	    rel="nofollow">Show this page source</a>
+    </span>
+    </div>
+     <div class="rel rellarge">
+    
+    <div class="buttonPrevious">
+      <a href="index.html">
+        Previous
+      </a>  
+    </div>
+    <div class="buttonNext">
+      <a href="vb_covariance.html">
+        Next
+      </a>  
+    </div>
+    
+     </div>
+     <script type="text/javascript">
+       $("div.buttonNext, div.buttonPrevious").hover(
+           function () {
+               $(this).css('background-color', '#FF9C34');
+           },
+           function () {
+               $(this).css('background-color', '#A7D6E2');
+           }
+       );
+     </script>
+  </body>
+</html>
